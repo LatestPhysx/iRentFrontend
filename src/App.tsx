@@ -25,6 +25,9 @@ function App() {
   const [error, setError] = useState<string | null>(null)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
   useEffect(() => {
     const root = document.documentElement
     root.classList.remove('light', 'dark')
@@ -106,13 +109,14 @@ function App() {
     <div className="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
       <header className="absolute top-6 inset-x-0 z-50 flex justify-center pointer-events-none">
         <div className="pointer-events-auto max-w-5xl w-full mx-auto px-6 py-3 rounded-full bg-white/80 dark:bg-slate-900/80 border border-slate-200/70 dark:border-slate-800/70 shadow-lg shadow-black/10 backdrop-blur-md flex items-center justify-between gap-8">
-          <div className="flex items-center gap-2 cursor-pointer">
+          <div className="flex items-center gap-2 cursor-pointer relative z-50">
             <div className="p-2 bg-primary rounded-lg text-white">
               <span className="material-symbols-outlined text-2xl">directions_car</span>
             </div>
-            <h1 className="text-xl font-bold tracking-tight">DriveShare</h1>
+            <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">DriveShare</h1>
           </div>
 
+          {/* Desktop Nav */}
           <nav className="hidden md:flex items-center justify-between gap-8 flex-1">
             <div className="flex items-center justify-center gap-6 text-sm font-medium text-slate-700 dark:text-slate-200">
               <a className="hover:text-primary transition-colors" href="#">
@@ -164,8 +168,30 @@ function App() {
                 </button>
                 <a href="#" className="text-sm font-medium hover:text-primary transition-colors">My Trips</a>
                 <a href="#" className="text-sm font-medium hover:text-primary transition-colors">Messages</a>
-                <div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden cursor-pointer" onClick={() => setIsLoggedIn(false)} title="Sign Out">
-                  <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Felix" alt="User" />
+                <div className="relative">
+                  <div
+                    className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden cursor-pointer ring-2 ring-transparent hover:ring-primary transition-all"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    title="User Menu"
+                  >
+                    <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Felix" alt="User" />
+                  </div>
+                  {isDropdownOpen && (
+                    <div className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 overflow-hidden py-1 z-50">
+                      <a href="#" className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800">Profile</a>
+                      <a href="#" className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800">Settings</a>
+                      <div className="h-px bg-slate-100 dark:bg-slate-800 my-1"></div>
+                      <button
+                        onClick={() => {
+                          setIsLoggedIn(false)
+                          setIsDropdownOpen(false)
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10"
+                      >
+                        Sign Out
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <button
                   type="button"
@@ -176,13 +202,26 @@ function App() {
               </div>
             )}
           </nav>
-        </div>
-      </header >
 
-      <main className="flex-grow">
-        <section className="relative w-full h-[680px] pt-28">
+          {/* Mobile Menu Toggle */}
+          <button
+            className="md:hidden relative z-50 p-2 text-slate-800 dark:text-slate-100"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            <span className="material-symbols-outlined !text-3xl">
+              {isMobileMenuOpen ? 'close' : 'menu'}
+            </span>
+          </button>
+
+          {/* Mobile Nav Overlay */}
+          {/* Mobile Nav Overlay moved to Portal/Body level - See end of component */}
+        </div>
+      </header>
+
+      <main className="flex-grow bg-background-light dark:bg-background-dark">
+        <section className="relative w-full h-auto min-h-[500px] lg:h-[680px] pt-28 pb-12 lg:pb-0">
           <div
-            className="absolute inset-0 bg-cover bg-[center_right]"
+            className="absolute inset-0 bg-cover bg-center lg:bg-[center_right]"
             style={{
               // Place your image at public/hero-car.jpg so this works in dev and on GitHub Pages
               backgroundImage: "url('/hero-car.jpg')",
@@ -191,7 +230,7 @@ function App() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/40 to-black/20" />
           </div>
 
-          <div className="relative h-full w-full flex flex-col">
+          <div className="relative h-full w-full flex flex-col md:pb-0">
             <div className="flex-1 flex flex-col justify-center px-6">
               <div className="max-w-7xl mx-auto flex flex-col items-center gap-6 text-center">
                 <h2 className="text-5xl md:text-7xl font-black text-white drop-shadow-2xl max-w-4xl leading-tight">
@@ -204,16 +243,17 @@ function App() {
             </div>
           </div>
 
-          {/* Search bar positioned to overlap both hero and categories sections */}
-          <div className="absolute inset-x-0 bottom-0 translate-y-1/2 flex justify-center px-6 z-10">
+          {/* Search bar: Static on mobile/tablet, Absolute overlap ONLY on Desktop (lg+) */}
+          <div className="relative lg:absolute inset-x-0 bottom-0 lg:translate-y-1/2 flex justify-center px-6 z-20 mt-8 lg:mt-0">
             <form
               onSubmit={handleSubmit}
               className="w-full max-w-6xl bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-2xl border border-slate-100 dark:border-slate-800"
             >
-              <div className="grid grid-cols-12 gap-4">
+              {/* Desktop Layout (>= 1024px) */}
+              <div className="hidden lg:grid grid-cols-12 gap-4">
                 <div className="col-span-12 lg:col-span-4 space-y-2">
                   <label
-                    htmlFor="pickup-location"
+                    htmlFor="pickup-location-desktop"
                     className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 ml-1"
                   >
                     Pickup Location
@@ -223,7 +263,7 @@ function App() {
                       <span className="material-symbols-outlined text-xl">location_on</span>
                     </div>
                     <input
-                      id="pickup-location"
+                      id="pickup-location-desktop"
                       className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm font-medium"
                       placeholder="City, airport, or address"
                       type="text"
@@ -241,7 +281,7 @@ function App() {
                         {pickupSuggestions.map((s) => (
                           <button
                             type="button"
-                            key={`${s.lat}-${s.lon}`}
+                            key={`desktop-${s.lat}-${s.lon}`}
                             className="w-full text-left p-3 hover:bg-slate-50 dark:hover:bg-slate-800 flex flex-col gap-1"
                             onClick={() => {
                               setPickupLocation(s.displayName)
@@ -269,10 +309,10 @@ function App() {
                         if (checked) setDropoffLocation(pickupLocation)
                       }}
                       className="w-4 h-4 rounded text-primary focus:ring-primary border-slate-300"
-                      id="same-location"
+                      id="same-location-desktop"
                       type="checkbox"
                     />
-                    <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="same-location">
+                    <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="same-location-desktop">
                       Return car to same location
                     </label>
                     <span className="text-slate-300 dark:text-slate-600">•</span>
@@ -285,9 +325,9 @@ function App() {
                     </button>
                   </div>
                   {!sameLocation && (
-                    <div className="space-y-2">
+                    <div className="space-y-2 mt-2">
                       <label
-                        htmlFor="dropoff-location"
+                        htmlFor="dropoff-location-desktop"
                         className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 ml-1"
                       >
                         Drop-off Location
@@ -297,7 +337,7 @@ function App() {
                           <span className="material-symbols-outlined text-xl">location_on</span>
                         </div>
                         <input
-                          id="dropoff-location"
+                          id="dropoff-location-desktop"
                           className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm font-medium"
                           placeholder="City, airport, or address"
                           type="text"
@@ -314,7 +354,7 @@ function App() {
                             {dropoffSuggestions.map((s) => (
                               <button
                                 type="button"
-                                key={`${s.lat}-${s.lon}`}
+                                key={`desktop-dropoff-${s.lat}-${s.lon}`}
                                 className="w-full text-left p-3 hover:bg-slate-50 dark:hover:bg-slate-800 flex flex-col gap-1"
                                 onClick={() => {
                                   setDropoffLocation(s.displayName)
@@ -362,7 +402,7 @@ function App() {
                   </div>
                 </div>
 
-                <div className="col-span-6 lg:col-span-3 space-y-2 ml-2">
+                <div className="col-span-6 lg:col-span-3 space-y-2">
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 ml-1">
                     Drop-off Date &amp; Time
                   </label>
@@ -401,6 +441,210 @@ function App() {
                   </button>
                 </div>
               </div>
+
+              {/* Mobile (< 1024px) Layout: Stacked for Mobile, Compact Grid for Tablet */}
+              <div className="lg:hidden flex flex-col gap-5 md:grid md:grid-cols-2 md:gap-4 text-left">
+                {/* 1. Pickup Location Card */}
+                <div className="space-y-2 md:col-span-2">
+                  <label
+                    htmlFor="pickup-location-mobile"
+                    className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 ml-1"
+                  >
+                    Pickup Location
+                  </label>
+                  <div className="relative">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">
+                      <span className="material-symbols-outlined text-xl">location_on</span>
+                    </div>
+                    <input
+                      id="pickup-location-mobile"
+                      className="w-full pl-12 pr-4 py-4 md:py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-base md:text-sm font-medium"
+                      placeholder="City, airport, or address"
+                      type="text"
+                      value={pickupLocation}
+                      onChange={(e) => {
+                        setPickupLocation(e.target.value)
+                        fetchSuggestions(e.target.value, setPickupSuggestions)
+                        if (sameLocation) setDropoffLocation(e.target.value)
+                      }}
+                      autoComplete="off"
+                      required
+                    />
+                    {pickupSuggestions.length > 0 && (
+                      <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-10 overflow-hidden">
+                        {pickupSuggestions.map((s) => (
+                          <button
+                            type="button"
+                            key={`mobile-${s.lat}-${s.lon}`}
+                            className="w-full text-left p-4 md:p-3 hover:bg-slate-50 dark:hover:bg-slate-800 flex flex-col gap-1 border-b border-slate-100 dark:border-slate-800 last:border-0"
+                            onClick={() => {
+                              setPickupLocation(s.displayName)
+                              if (sameLocation) setDropoffLocation(s.displayName)
+                              setPickupSuggestions([])
+                            }}
+                          >
+                            <span className="text-sm font-bold text-slate-800 dark:text-slate-100">
+                              {s.displayName}
+                            </span>
+                            <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                              {Number(s.lat).toFixed(4)}, {Number(s.lon).toFixed(4)}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* 2. Pickup Date & Time Grid */}
+                <div className="grid grid-cols-2 gap-4 md:col-span-2">
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 ml-1">
+                      Pickup Date
+                    </label>
+                    <input
+                      className="w-full px-4 py-4 md:py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-800 dark:text-slate-100 text-sm font-medium"
+                      type="date"
+                      value={pickupDate}
+                      onChange={(e) => setPickupDate(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 ml-1">
+                      Time
+                    </label>
+                    <input
+                      className="w-full px-4 py-4 md:py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-800 dark:text-slate-100 text-sm font-medium"
+                      type="time"
+                      value={pickupTime}
+                      onChange={(e) => setPickupTime(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* 3. Toggle */}
+                <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-800 p-4 md:p-3 rounded-xl border border-slate-200 dark:border-slate-700 md:col-span-2">
+                  <div className="relative flex items-center">
+                    <input
+                      checked={sameLocation}
+                      onChange={(e) => {
+                        const checked = e.target.checked
+                        setSameLocation(checked)
+                        if (checked) setDropoffLocation(pickupLocation)
+                      }}
+                      className="w-5 h-5 rounded text-primary focus:ring-primary border-slate-300"
+                      id="same-location-mobile"
+                      type="checkbox"
+                    />
+                  </div>
+                  <label className="text-sm font-bold text-slate-700 dark:text-slate-200 flex-1 cursor-pointer" htmlFor="same-location-mobile">
+                    Return car to same location
+                  </label>
+                </div>
+
+                {/* 4. Dropoff Location (Conditional) */}
+                {!sameLocation && (
+                  <div className="space-y-2 animate-in fade-in slide-in-from-top-4 duration-200 md:col-span-2">
+                    <label
+                      htmlFor="dropoff-location-mobile"
+                      className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 ml-1"
+                    >
+                      Drop-off Location
+                    </label>
+                    <div className="relative">
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">
+                        <span className="material-symbols-outlined text-xl">location_on</span>
+                      </div>
+                      <input
+                        id="dropoff-location-mobile"
+                        className="w-full pl-12 pr-4 py-4 md:py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-base md:text-sm font-medium"
+                        placeholder="City, airport, or address"
+                        type="text"
+                        value={dropoffLocation}
+                        onChange={(e) => {
+                          setDropoffLocation(e.target.value)
+                          fetchSuggestions(e.target.value, setDropoffSuggestions)
+                        }}
+                        autoComplete="off"
+                        required
+                      />
+                      {dropoffSuggestions.length > 0 && (
+                        <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-10 overflow-hidden">
+                          {dropoffSuggestions.map((s) => (
+                            <button
+                              type="button"
+                              key={`mobile-dropoff-${s.lat}-${s.lon}`}
+                              className="w-full text-left p-4 md:p-3 hover:bg-slate-50 dark:hover:bg-slate-800 flex flex-col gap-1 border-b border-slate-100 dark:border-slate-800 last:border-0"
+                              onClick={() => {
+                                setDropoffLocation(s.displayName)
+                                setDropoffSuggestions([])
+                              }}
+                            >
+                              <span className="text-sm font-bold text-slate-800 dark:text-slate-100">
+                                {s.displayName}
+                              </span>
+                              <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                                {Number(s.lat).toFixed(4)}, {Number(s.lon).toFixed(4)}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* 5. Dropoff Date & Time Grid */}
+                <div className="grid grid-cols-2 gap-4 md:col-span-2">
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 ml-1">
+                      Drop-off Date
+                    </label>
+                    <input
+                      className="w-full px-4 py-4 md:py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-800 dark:text-slate-100 text-sm font-medium"
+                      type="date"
+                      value={dropoffDate}
+                      onChange={(e) => setDropoffDate(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 ml-1">
+                      Time
+                    </label>
+                    <input
+                      className="w-full px-4 py-4 md:py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-800 dark:text-slate-100 text-sm font-medium"
+                      type="time"
+                      value={dropoffTime}
+                      onChange={(e) => setDropoffTime(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="pt-2 flex flex-col gap-3 md:col-span-2">
+                  <button
+                    type="submit"
+                    className={`w-full py-4 md:py-3 rounded-xl font-bold text-lg md:text-base shadow-xl shadow-primary/20 transition-all ${canSearch
+                      ? 'bg-primary text-white hover:bg-primary/90'
+                      : 'bg-slate-200 text-slate-500 cursor-not-allowed'
+                      }`}
+                    disabled={!canSearch}
+                  >
+                    Search Cars
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleClear}
+                    className="w-full py-3 md:py-2 font-bold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-colors md:text-sm"
+                  >
+                    Clear all filters
+                  </button>
+                </div>
+              </div>
               {error && (
                 <p className="text-sm text-red-600 font-semibold mt-3 text-left">{error}</p>
               )}
@@ -408,37 +652,41 @@ function App() {
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-6 pt-40 pb-20">
+
+
+        {/* Adjusted padding top for categories since absolute search bar only overlaps on desktop now */}
+        {/* If static on mobile/tablet, we don't need huge padding top. If absolute on desktop, we do. */}
+        <section className="max-w-7xl mx-auto px-6 pt-12 lg:pt-40 pb-20">
           <h3 className="text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-10 text-left">
             Categories
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="group flex flex-col items-center p-8 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl hover:border-primary transition-all cursor-pointer">
-              <div className="mb-4 text-slate-400 group-hover:text-primary transition-colors">
+            <div className="group flex flex-col items-center p-8 bg-primary border border-primary rounded-2xl hover:shadow-2xl hover:scale-105 transition-all cursor-pointer">
+              <div className="mb-4 text-white/80 group-hover:text-white transition-colors">
                 <span className="material-symbols-outlined !text-4xl">auto_awesome</span>
               </div>
-              <span className="font-bold text-slate-700 dark:text-slate-300 group-hover:text-primary transition-colors">SUVs</span>
+              <span className="font-bold text-white group-hover:text-white transition-colors">SUVs</span>
             </div>
 
-            <div className="group flex flex-col items-center p-8 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl hover:border-primary transition-all cursor-pointer">
-              <div className="mb-4 text-slate-400 group-hover:text-primary transition-colors">
+            <div className="group flex flex-col items-center p-8 bg-primary border border-primary rounded-2xl hover:shadow-2xl hover:scale-105 transition-all cursor-pointer">
+              <div className="mb-4 text-white/80 group-hover:text-white transition-colors">
                 <span className="material-symbols-outlined !text-4xl">electric_car</span>
               </div>
-              <span className="font-bold text-slate-700 dark:text-slate-300 group-hover:text-primary transition-colors">Electric</span>
+              <span className="font-bold text-white group-hover:text-white transition-colors">Electric</span>
             </div>
 
-            <div className="group flex flex-col items-center p-8 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl hover:border-primary transition-all cursor-pointer">
-              <div className="mb-4 text-slate-400 group-hover:text-primary transition-colors">
+            <div className="group flex flex-col items-center p-8 bg-primary border border-primary rounded-2xl hover:shadow-2xl hover:scale-105 transition-all cursor-pointer">
+              <div className="mb-4 text-white/80 group-hover:text-white transition-colors">
                 <span className="material-symbols-outlined !text-4xl">workspace_premium</span>
               </div>
-              <span className="font-bold text-slate-700 dark:text-slate-300 group-hover:text-primary transition-colors">Luxury</span>
+              <span className="font-bold text-white group-hover:text-white transition-colors">Luxury</span>
             </div>
 
-            <div className="group flex flex-col items-center p-8 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl hover:border-primary transition-all cursor-pointer">
-              <div className="mb-4 text-slate-400 group-hover:text-primary transition-colors">
+            <div className="group flex flex-col items-center p-8 bg-primary border border-primary rounded-2xl hover:shadow-2xl hover:scale-105 transition-all cursor-pointer">
+              <div className="mb-4 text-white/80 group-hover:text-white transition-colors">
                 <span className="material-symbols-outlined !text-4xl">eco</span>
               </div>
-              <span className="font-bold text-slate-700 dark:text-slate-300 group-hover:text-primary transition-colors">Economy</span>
+              <span className="font-bold text-white group-hover:text-white transition-colors">Economy</span>
             </div>
           </div>
         </section>
@@ -820,7 +1068,96 @@ function App() {
           </div>
         </div>
       </footer>
-    </div >
+
+      {/* Mobile Nav Overlay (Moved outside Header to avoid clipping) */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 bg-white dark:bg-slate-950 z-[100] flex flex-col p-6 md:hidden animate-in fade-in duration-200 overflow-y-auto">
+          <div className="flex justify-end mb-8">
+            <button
+              className="p-2 text-slate-800 dark:text-slate-100 bg-slate-100 dark:bg-slate-800 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <span className="material-symbols-outlined !text-2xl">close</span>
+            </button>
+          </div>
+          <div className="flex flex-col gap-6 text-xl font-medium text-slate-800 dark:text-slate-100">
+            <a href="#" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-primary">Become a Host</a>
+            <a href="#" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-primary">Browse Cars</a>
+            <a href="#" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-primary">Help</a>
+            <hr className="border-slate-200 dark:border-slate-800" />
+
+            <button
+              type="button"
+              className="flex items-center gap-3 text-left w-full hover:text-primary transition-colors"
+              onClick={() => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))}
+            >
+              <span className="material-symbols-outlined">
+                {theme === 'light' ? 'dark_mode' : 'light_mode'}
+              </span>
+              <span>{theme === 'light' ? 'Dark Mode' : 'Light Mode'}</span>
+            </button>
+
+            {!isLoggedIn ? (
+              <div className="flex flex-col gap-4 mt-4">
+                <button
+                  type="button"
+                  className="w-full py-3 rounded-xl border border-slate-200 dark:border-slate-800 font-bold"
+                  onClick={() => {
+                    setIsLoggedIn(true)
+                    setIsMobileMenuOpen(false)
+                  }}
+                >
+                  Sign In
+                </button>
+                <button
+                  type="button"
+                  className="w-full py-3 rounded-xl bg-primary text-white font-bold shadow-lg shadow-primary/20"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Get Started
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-4 mt-4">
+                <div className="flex items-center gap-3 mb-2 p-3 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                  <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
+                    <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Felix" alt="User" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold">Felix User</span>
+                    <span className="text-xs text-slate-500">View Profile</span>
+                  </div>
+                </div>
+                <a href="#" className="flex items-center gap-3 hover:text-primary">
+                  <span className="material-symbols-outlined">commute</span>
+                  My Trips
+                </a>
+                <a href="#" className="flex items-center gap-3 hover:text-primary">
+                  <span className="material-symbols-outlined">chat</span>
+                  Messages
+                </a>
+                <button
+                  onClick={() => {
+                    setIsLoggedIn(false)
+                    setIsMobileMenuOpen(false)
+                  }}
+                  className="flex items-center gap-3 text-red-600 mt-2 hover:text-red-700"
+                >
+                  <span className="material-symbols-outlined">logout</span>
+                  Sign Out
+                </button>
+                <button
+                  type="button"
+                  className="w-full mt-4 py-3 rounded-xl bg-primary text-white font-bold shadow-lg"
+                >
+                  List your car
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
   )
 }
 
