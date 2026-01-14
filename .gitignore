@@ -24,3 +24,4 @@ dist-ssr
 *.sw?
 
 GITHUB_ACTIONS_VARIABLES.md
+.jar
