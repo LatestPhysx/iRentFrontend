@@ -144,6 +144,26 @@ jobs:
             --task-definition ${{ env.ECS_TASK_DEFINITION }} \
             --query taskDefinition > task-definition.json
 
+      - name: Verify ECS cluster and service exist
+        run: |
+          set -euo pipefail
+          CLUSTER="${{ env.ECS_CLUSTER }}"
+          SERVICE="${{ env.ECS_SERVICE }}"
+          echo "Verifying ECS cluster='$CLUSTER' service='$SERVICE'"
+          if [ -z "$CLUSTER" ] || [ -z "$SERVICE" ]; then
+            echo "ERROR: ECS_CLUSTER or ECS_SERVICE environment variable is empty."; exit 1
+          fi
+          DESCRIBE=$(aws ecs describe-services --cluster "$CLUSTER" --services "$SERVICE" --output json)
+          echo "$DESCRIBE"
+          FAILURES=$(echo "$DESCRIBE" | jq -r '.failures | length')
+          if [ "$FAILURES" != "0" ]; then
+            echo "ERROR: ECS describe-services returned failures:"; echo "$DESCRIBE" | jq -r '.failures'; exit 1
+          fi
+          STATUS=$(echo "$DESCRIBE" | jq -r '.services[0].status')
+          if [ "$STATUS" = "" ] || [ "$STATUS" = "MISSING" ] || [ "$STATUS" = "INACTIVE" ]; then
+            echo "ERROR: ECS service status is unexpected: $STATUS"; exit 1
+          fi
+
       - name: Get container name from task definition
         id: get-name
         run: |
