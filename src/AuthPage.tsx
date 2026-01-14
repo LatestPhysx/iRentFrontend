@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 type View =
   | 'sign-in'
@@ -6,8 +6,38 @@ type View =
   | 'register-basic-info'
   | 'register-final-details'
 
+type Theme = 'light' | 'dark'
+
 const AuthPage = () => {
   const [view, setView] = useState<View>('sign-in')
+  const [theme, setTheme] = useState<Theme>('light')
+
+  // Initialize theme from localStorage (default to light to match design)
+  useEffect(() => {
+    const stored = window.localStorage.getItem('theme') as Theme | null
+    if (stored === 'light' || stored === 'dark') {
+      setTheme(stored)
+    } else {
+      setTheme('light')
+    }
+  }, [])
+
+  // Apply theme class to the root html element
+  useEffect(() => {
+    const root = document.documentElement
+    if (theme === 'dark') {
+      root.classList.add('dark')
+      root.classList.remove('light')
+    } else {
+      root.classList.add('light')
+      root.classList.remove('dark')
+    }
+    window.localStorage.setItem('theme', theme)
+  }, [theme])
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))
+  }
 
   const goToRegister = () => setView('register-account-type')
   const goToSignIn = () => setView('sign-in')
@@ -17,7 +47,7 @@ const AuthPage = () => {
   if (view === 'sign-in') {
     return (
       <div className="bg-background-light dark:bg-background-dark font-sans text-[#141216] dark:text-white transition-colors duration-300 min-h-screen flex flex-col items-center">
-        <header className="w-full flex justify-center pt-12 pb-8">
+        <header className="w-full flex justify-center pt-12 pb-8 relative">
           <div className="flex items-center gap-2">
             <div className="text-primary">
               <svg
@@ -36,6 +66,16 @@ const AuthPage = () => {
               AutoShare
             </h2>
           </div>
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="absolute right-6 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-9 h-9 rounded-full border border-[#e0dde3] dark:border-[#332e3d] bg-white dark:bg-[#18141e] text-[#726a81] hover:text-primary shadow-sm transition-colors"
+            aria-label="Toggle theme"
+          >
+            <span className="material-symbols-outlined text-[18px]">
+              {theme === 'light' ? 'dark_mode' : 'light_mode'}
+            </span>
+          </button>
         </header>
         <main className="flex w-full flex-1 flex-col items-center px-6 max-w-[420px]">
           <div className="text-center mb-10">
@@ -173,7 +213,7 @@ const AuthPage = () => {
   if (view === 'register-account-type') {
     return (
       <div className="bg-background-light dark:bg-background-dark font-sans text-[#141216] dark:text-white transition-colors duration-300 min-h-screen flex flex-col items-center">
-        <header className="w-full flex justify-center py-10">
+        <header className="w-full flex justify-center py-10 relative">
           <div className="flex items-center gap-3">
             <div className="text-primary">
               <svg
@@ -192,6 +232,16 @@ const AuthPage = () => {
               AutoShare
             </h2>
           </div>
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="absolute right-6 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-9 h-9 rounded-full border border-[#e0dde3] dark:border-[#332e3d] bg-white dark:bg-[#18141e] text-[#726a81] hover:text-primary shadow-sm transition-colors"
+            aria-label="Toggle theme"
+          >
+            <span className="material-symbols-outlined text-[18px]">
+              {theme === 'light' ? 'dark_mode' : 'light_mode'}
+            </span>
+          </button>
         </header>
         <main className="flex w-full flex-col items-center justify-center px-4 max-w-4xl">
           <div className="w-full mb-12">
@@ -317,7 +367,7 @@ const AuthPage = () => {
   if (view === 'register-basic-info') {
     return (
       <div className="bg-background-light dark:bg-background-dark font-sans text-[#141216] dark:text-white transition-colors duration-300 min-h-screen flex flex-col items-center">
-        <header className="w-full flex justify-center py-8">
+        <header className="w-full flex justify-center py-8 relative">
           <div className="flex items-center gap-3">
             <div className="text-primary">
               <svg
@@ -336,6 +386,16 @@ const AuthPage = () => {
               AutoShare
             </h2>
           </div>
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="absolute right-6 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-9 h-9 rounded-full border border-[#e0dde3] dark:border-[#332e3d] bg-white dark:bg-[#18141e] text-[#726a81] hover:text-primary shadow-sm transition-colors"
+            aria-label="Toggle theme"
+          >
+            <span className="material-symbols-outlined text-[18px]">
+              {theme === 'light' ? 'dark_mode' : 'light_mode'}
+            </span>
+          </button>
         </header>
         <main className="flex w-full flex-col items-center px-4 pb-20">
           <div className="w-full max-w-[560px]">
@@ -488,7 +548,7 @@ const AuthPage = () => {
 
   return (
     <div className="bg-background-light dark:bg-background-dark font-display text-[#141216] dark:text-white transition-colors duration-300 min-h-screen flex flex-col items-center">
-      <header className="w-full flex justify-center py-8">
+      <header className="w-full flex justify-center py-8 relative">
         <div className="flex items-center gap-3">
           <div className="text-primary">
             <svg
@@ -505,6 +565,16 @@ const AuthPage = () => {
           </div>
           <h2 className="text-2xl font-bold tracking-tight">AutoShare</h2>
         </div>
+        <button
+          type="button"
+          onClick={toggleTheme}
+          className="absolute right-6 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-9 h-9 rounded-full border border-[#e0dde3] dark:border-[#332e3d] bg-white dark:bg-[#18141e] text-[#726a81] hover:text-primary shadow-sm transition-colors"
+          aria-label="Toggle theme"
+        >
+          <span className="material-symbols-outlined text-[18px]">
+            {theme === 'light' ? 'dark_mode' : 'light_mode'}
+          </span>
+        </button>
       </header>
       <main className="flex w-full flex-col items-center justify-center px-4 pb-20">
         <div className="w-full max-w-[440px] mb-8">
