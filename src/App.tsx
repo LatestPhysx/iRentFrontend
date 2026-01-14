@@ -23,6 +23,7 @@ function App() {
   const [pickupSuggestions, setPickupSuggestions] = useState<Suggestion[]>([])
   const [dropoffSuggestions, setDropoffSuggestions] = useState<Suggestion[]>([])
   const [error, setError] = useState<string | null>(null)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   useEffect(() => {
     const root = document.documentElement
@@ -125,32 +126,58 @@ function App() {
               </a>
             </div>
 
-            <div className="flex items-center gap-4">
-              <button
-                type="button"
-                className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center text-slate-600 dark:text-slate-400"
-                onClick={() => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))}
-                title="Toggle Mode"
-              >
-                <span className="material-symbols-outlined dark-mode-icon">dark_mode</span>
-                <span className="material-symbols-outlined light-mode-icon">light_mode</span>
-              </button>
-              <button
-                type="button"
-                className="text-sm font-medium hover:text-primary transition-colors"
-              >
-                Sign In
-              </button>
-              <button
-                type="button"
-                className="bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all"
-              >
-                Get Started
-              </button>
-            </div>
+            {!isLoggedIn ? (
+              <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center text-slate-600 dark:text-slate-400"
+                  onClick={() => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))}
+                  title="Toggle Mode"
+                >
+                  <span className="material-symbols-outlined dark-mode-icon">dark_mode</span>
+                  <span className="material-symbols-outlined light-mode-icon">light_mode</span>
+                </button>
+                <button
+                  type="button"
+                  className="text-sm font-medium hover:text-primary transition-colors"
+                  onClick={() => setIsLoggedIn(true)}
+                >
+                  Sign In
+                </button>
+                <button
+                  type="button"
+                  className="bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all"
+                >
+                  Get Started
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center text-slate-600 dark:text-slate-400"
+                  onClick={() => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))}
+                  title="Toggle Mode"
+                >
+                  <span className="material-symbols-outlined dark-mode-icon">dark_mode</span>
+                  <span className="material-symbols-outlined light-mode-icon">light_mode</span>
+                </button>
+                <a href="#" className="text-sm font-medium hover:text-primary transition-colors">My Trips</a>
+                <a href="#" className="text-sm font-medium hover:text-primary transition-colors">Messages</a>
+                <div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden cursor-pointer" onClick={() => setIsLoggedIn(false)} title="Sign Out">
+                  <img src="https://api.dicebear.com/9.x/avataaars/svg?seed=Felix" alt="User" />
+                </div>
+                <button
+                  type="button"
+                  className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold shadow hover:bg-primary/90 transition-all"
+                >
+                  List your car
+                </button>
+              </div>
+            )}
           </nav>
         </div>
-      </header>
+      </header >
 
       <main className="flex-grow">
         <section className="relative w-full h-[680px] pt-28">
@@ -166,11 +193,11 @@ function App() {
 
           <div className="relative h-full w-full flex flex-col">
             <div className="flex-1 flex flex-col justify-center px-6">
-              <div className="max-w-7xl mx-auto flex flex-col items-start gap-4">
-                <h2 className="text-4xl md:text-6xl font-bold text-white drop-shadow-xl text-left max-w-xl">
-                  Rent a Car in Minutes. بلا صداع
+              <div className="max-w-7xl mx-auto flex flex-col items-center gap-6 text-center">
+                <h2 className="text-5xl md:text-7xl font-black text-white drop-shadow-2xl max-w-4xl leading-tight">
+                  Rent a Car in Minutes. <span className="text-primary inline-block font-[Alexandria] tracking-wide whitespace-nowrap hover:scale-105 transition-transform duration-300 cursor-default">بلا صداع</span>
                 </h2>
-                <p className="text-lg md:text-xl text-white/90 max-w-xl font-medium text-left">
+                <p className="text-xl md:text-2xl text-white/95 max-w-2xl font-medium">
                   Pick a location, choose your dates, and hit the road simple, fast, and transparent.
                 </p>
               </div>
@@ -183,202 +210,201 @@ function App() {
               onSubmit={handleSubmit}
               className="w-full max-w-6xl bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-2xl border border-slate-100 dark:border-slate-800"
             >
-                <div className="grid grid-cols-12 gap-4">
-                  <div className="col-span-12 lg:col-span-4 space-y-2">
-                    <label
-                      htmlFor="pickup-location"
-                      className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 ml-1"
-                    >
-                      Pickup Location
-                    </label>
-                    <div className="relative">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">
-                        <span className="material-symbols-outlined text-xl">location_on</span>
-                      </div>
-                      <input
-                        id="pickup-location"
-                        className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm font-medium"
-                        placeholder="City, airport, or address"
-                        type="text"
-                        value={pickupLocation}
-                        onChange={(e) => {
-                          setPickupLocation(e.target.value)
-                          fetchSuggestions(e.target.value, setPickupSuggestions)
-                          if (sameLocation) setDropoffLocation(e.target.value)
-                        }}
-                        autoComplete="off"
-                        required
-                      />
-                      {pickupSuggestions.length > 0 && (
-                        <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-10 overflow-hidden">
-                          {pickupSuggestions.map((s) => (
-                            <button
-                              type="button"
-                              key={`${s.lat}-${s.lon}`}
-                              className="w-full text-left p-3 hover:bg-slate-50 dark:hover:bg-slate-800 flex flex-col gap-1"
-                              onClick={() => {
-                                setPickupLocation(s.displayName)
-                                if (sameLocation) setDropoffLocation(s.displayName)
-                                setPickupSuggestions([])
-                              }}
-                            >
-                              <span className="text-sm font-bold text-slate-800 dark:text-slate-100">
-                                {s.displayName}
-                              </span>
-                              <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                                {Number(s.lat).toFixed(4)}, {Number(s.lon).toFixed(4)}
-                              </span>
-                            </button>
-                          ))}
-                        </div>
-                      )}
+              <div className="grid grid-cols-12 gap-4">
+                <div className="col-span-12 lg:col-span-4 space-y-2">
+                  <label
+                    htmlFor="pickup-location"
+                    className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 ml-1"
+                  >
+                    Pickup Location
+                  </label>
+                  <div className="relative">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">
+                      <span className="material-symbols-outlined text-xl">location_on</span>
                     </div>
-                    <div className="flex items-center gap-2 mt-2 ml-1">
-                      <input
-                        checked={sameLocation}
-                        onChange={(e) => {
-                          const checked = e.target.checked
-                          setSameLocation(checked)
-                          if (checked) setDropoffLocation(pickupLocation)
-                        }}
-                        className="w-4 h-4 rounded text-primary focus:ring-primary border-slate-300"
-                        id="same-location"
-                        type="checkbox"
-                      />
-                      <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="same-location">
-                        Return car to same location
-                      </label>
-                      <span className="text-slate-300 dark:text-slate-600">•</span>
-                      <button
-                        type="button"
-                        onClick={handleClear}
-                        className="text-sm font-bold text-primary hover:underline transition-colors"
-                      >
-                        Clear all
-                      </button>
-                    </div>
-                    {!sameLocation && (
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="dropoff-location"
-                          className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 ml-1"
-                        >
-                          Drop-off Location
-                        </label>
-                        <div className="relative">
-                          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">
-                            <span className="material-symbols-outlined text-xl">location_on</span>
-                          </div>
-                          <input
-                            id="dropoff-location"
-                            className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm font-medium"
-                            placeholder="City, airport, or address"
-                            type="text"
-                            value={dropoffLocation}
-                            onChange={(e) => {
-                              setDropoffLocation(e.target.value)
-                              fetchSuggestions(e.target.value, setDropoffSuggestions)
+                    <input
+                      id="pickup-location"
+                      className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm font-medium"
+                      placeholder="City, airport, or address"
+                      type="text"
+                      value={pickupLocation}
+                      onChange={(e) => {
+                        setPickupLocation(e.target.value)
+                        fetchSuggestions(e.target.value, setPickupSuggestions)
+                        if (sameLocation) setDropoffLocation(e.target.value)
+                      }}
+                      autoComplete="off"
+                      required
+                    />
+                    {pickupSuggestions.length > 0 && (
+                      <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-10 overflow-hidden">
+                        {pickupSuggestions.map((s) => (
+                          <button
+                            type="button"
+                            key={`${s.lat}-${s.lon}`}
+                            className="w-full text-left p-3 hover:bg-slate-50 dark:hover:bg-slate-800 flex flex-col gap-1"
+                            onClick={() => {
+                              setPickupLocation(s.displayName)
+                              if (sameLocation) setDropoffLocation(s.displayName)
+                              setPickupSuggestions([])
                             }}
-                            autoComplete="off"
-                            required
-                          />
-                          {dropoffSuggestions.length > 0 && (
-                            <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-10 overflow-hidden">
-                              {dropoffSuggestions.map((s) => (
-                                <button
-                                  type="button"
-                                  key={`${s.lat}-${s.lon}`}
-                                  className="w-full text-left p-3 hover:bg-slate-50 dark:hover:bg-slate-800 flex flex-col gap-1"
-                                  onClick={() => {
-                                    setDropoffLocation(s.displayName)
-                                    setDropoffSuggestions([])
-                                  }}
-                                >
-                                  <span className="text-sm font-bold text-slate-800 dark:text-slate-100">
-                                    {s.displayName}
-                                  </span>
-                                  <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                                    {Number(s.lat).toFixed(4)}, {Number(s.lon).toFixed(4)}
-                                  </span>
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
+                          >
+                            <span className="text-sm font-bold text-slate-800 dark:text-slate-100">
+                              {s.displayName}
+                            </span>
+                            <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                              {Number(s.lat).toFixed(4)}, {Number(s.lon).toFixed(4)}
+                            </span>
+                          </button>
+                        ))}
                       </div>
                     )}
                   </div>
-
-                  <div className="col-span-6 lg:col-span-3 space-y-2">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 ml-1">
-                      Pickup Date &amp; Time
+                  <div className="flex items-center gap-2 mt-2 ml-1">
+                    <input
+                      checked={sameLocation}
+                      onChange={(e) => {
+                        const checked = e.target.checked
+                        setSameLocation(checked)
+                        if (checked) setDropoffLocation(pickupLocation)
+                      }}
+                      className="w-4 h-4 rounded text-primary focus:ring-primary border-slate-300"
+                      id="same-location"
+                      type="checkbox"
+                    />
+                    <label className="text-xs font-medium text-slate-600 dark:text-slate-400" htmlFor="same-location">
+                      Return car to same location
                     </label>
-                    <div className="flex gap-2">
-                      <div className="relative flex-1">
-                        <input
-                          className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-800 dark:text-slate-100 text-sm font-medium"
-                          type="date"
-                          value={pickupDate}
-                          onChange={(e) => setPickupDate(e.target.value)}
-                          required
-                        />
-                      </div>
-                      <div className="relative w-28">
-                        <input
-                          className="w-full px-2 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-800 dark:text-slate-100 text-sm font-medium"
-                          type="time"
-                          value={pickupTime}
-                          onChange={(e) => setPickupTime(e.target.value)}
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="col-span-6 lg:col-span-3 space-y-2 ml-2">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 ml-1">
-                      Drop-off Date &amp; Time
-                    </label>
-                    <div className="flex gap-2">
-                      <div className="relative flex-1">
-                        <input
-                          className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-800 dark:text-slate-100 text-sm font-medium"
-                          type="date"
-                          value={dropoffDate}
-                          onChange={(e) => setDropoffDate(e.target.value)}
-                          required
-                        />
-                      </div>
-                      <div className="relative w-28">
-                        <input
-                          className="w-full px-2 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-800 dark:text-slate-100 text-sm font-medium"
-                          type="time"
-                          value={dropoffTime}
-                          onChange={(e) => setDropoffTime(e.target.value)}
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="col-span-12 lg:col-span-2 flex items-center justify-end pr-4">
+                    <span className="text-slate-300 dark:text-slate-600">•</span>
                     <button
-                      type="submit"
-                      className={`w-32 px-5 py-3 rounded-xl font-bold transition-all ${
-                        canSearch
-                          ? 'bg-primary text-white shadow-lg shadow-primary/20 hover:bg-primary/90'
-                          : 'bg-slate-200 text-slate-500 cursor-not-allowed'
-                      }`}
-                      disabled={!canSearch}
+                      type="button"
+                      onClick={handleClear}
+                      className="text-sm font-bold text-primary hover:underline transition-colors"
                     >
-                      Search
+                      Clear all
                     </button>
                   </div>
+                  {!sameLocation && (
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="dropoff-location"
+                        className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 ml-1"
+                      >
+                        Drop-off Location
+                      </label>
+                      <div className="relative">
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">
+                          <span className="material-symbols-outlined text-xl">location_on</span>
+                        </div>
+                        <input
+                          id="dropoff-location"
+                          className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm font-medium"
+                          placeholder="City, airport, or address"
+                          type="text"
+                          value={dropoffLocation}
+                          onChange={(e) => {
+                            setDropoffLocation(e.target.value)
+                            fetchSuggestions(e.target.value, setDropoffSuggestions)
+                          }}
+                          autoComplete="off"
+                          required
+                        />
+                        {dropoffSuggestions.length > 0 && (
+                          <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-10 overflow-hidden">
+                            {dropoffSuggestions.map((s) => (
+                              <button
+                                type="button"
+                                key={`${s.lat}-${s.lon}`}
+                                className="w-full text-left p-3 hover:bg-slate-50 dark:hover:bg-slate-800 flex flex-col gap-1"
+                                onClick={() => {
+                                  setDropoffLocation(s.displayName)
+                                  setDropoffSuggestions([])
+                                }}
+                              >
+                                <span className="text-sm font-bold text-slate-800 dark:text-slate-100">
+                                  {s.displayName}
+                                </span>
+                                <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                                  {Number(s.lat).toFixed(4)}, {Number(s.lon).toFixed(4)}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
-                {error && (
-                  <p className="text-sm text-red-600 font-semibold mt-3 text-left">{error}</p>
-                )}
-              </form>
+
+                <div className="col-span-6 lg:col-span-3 space-y-2">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 ml-1">
+                    Pickup Date &amp; Time
+                  </label>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <input
+                        className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-800 dark:text-slate-100 text-sm font-medium"
+                        type="date"
+                        value={pickupDate}
+                        onChange={(e) => setPickupDate(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="relative w-28">
+                      <input
+                        className="w-full px-2 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-800 dark:text-slate-100 text-sm font-medium"
+                        type="time"
+                        value={pickupTime}
+                        onChange={(e) => setPickupTime(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="col-span-6 lg:col-span-3 space-y-2 ml-2">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 ml-1">
+                    Drop-off Date &amp; Time
+                  </label>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <input
+                        className="w-full px-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-800 dark:text-slate-100 text-sm font-medium"
+                        type="date"
+                        value={dropoffDate}
+                        onChange={(e) => setDropoffDate(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="relative w-28">
+                      <input
+                        className="w-full px-2 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-800 dark:text-slate-100 text-sm font-medium"
+                        type="time"
+                        value={dropoffTime}
+                        onChange={(e) => setDropoffTime(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="col-span-12 lg:col-span-2 flex items-center justify-end pr-4">
+                  <button
+                    type="submit"
+                    className={`w-32 px-5 py-3 rounded-xl font-bold transition-all ${canSearch
+                      ? 'bg-primary text-white shadow-lg shadow-primary/20 hover:bg-primary/90'
+                      : 'bg-slate-200 text-slate-500 cursor-not-allowed'
+                      }`}
+                    disabled={!canSearch}
+                  >
+                    Search
+                  </button>
+                </div>
+              </div>
+              {error && (
+                <p className="text-sm text-red-600 font-semibold mt-3 text-left">{error}</p>
+              )}
+            </form>
           </div>
         </section>
 
@@ -387,32 +413,32 @@ function App() {
             Categories
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="group flex flex-col items-center p-8 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl hover:border-primary/50 transition-all cursor-pointer">
+            <div className="group flex flex-col items-center p-8 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl hover:border-primary transition-all cursor-pointer">
               <div className="mb-4 text-slate-400 group-hover:text-primary transition-colors">
                 <span className="material-symbols-outlined !text-4xl">auto_awesome</span>
               </div>
-              <span className="font-bold text-slate-700 dark:text-slate-300">SUVs</span>
+              <span className="font-bold text-slate-700 dark:text-slate-300 group-hover:text-primary transition-colors">SUVs</span>
             </div>
 
-            <div className="group flex flex-col items-center p-8 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl hover:border-primary/50 transition-all cursor-pointer">
+            <div className="group flex flex-col items-center p-8 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl hover:border-primary transition-all cursor-pointer">
               <div className="mb-4 text-slate-400 group-hover:text-primary transition-colors">
                 <span className="material-symbols-outlined !text-4xl">electric_car</span>
               </div>
-              <span className="font-bold text-slate-700 dark:text-slate-300">Electric</span>
+              <span className="font-bold text-slate-700 dark:text-slate-300 group-hover:text-primary transition-colors">Electric</span>
             </div>
 
-            <div className="group flex flex-col items-center p-8 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl hover:border-primary/50 transition-all cursor-pointer">
+            <div className="group flex flex-col items-center p-8 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl hover:border-primary transition-all cursor-pointer">
               <div className="mb-4 text-slate-400 group-hover:text-primary transition-colors">
                 <span className="material-symbols-outlined !text-4xl">workspace_premium</span>
               </div>
-              <span className="font-bold text-slate-700 dark:text-slate-300">Luxury</span>
+              <span className="font-bold text-slate-700 dark:text-slate-300 group-hover:text-primary transition-colors">Luxury</span>
             </div>
 
-            <div className="group flex flex-col items-center p-8 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl hover:border-primary/50 transition-all cursor-pointer">
+            <div className="group flex flex-col items-center p-8 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl hover:border-primary transition-all cursor-pointer">
               <div className="mb-4 text-slate-400 group-hover:text-primary transition-colors">
                 <span className="material-symbols-outlined !text-4xl">eco</span>
               </div>
-              <span className="font-bold text-slate-700 dark:text-slate-300">Economy</span>
+              <span className="font-bold text-slate-700 dark:text-slate-300 group-hover:text-primary transition-colors">Economy</span>
             </div>
           </div>
         </section>
@@ -454,7 +480,7 @@ function App() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="block text-xl font-bold text-primary">$89</span>
+                    <span className="block text-xl font-bold text-primary">890 DH</span>
                     <span className="text-[10px] text-slate-400 uppercase font-bold tracking-tighter">
                       per day
                     </span>
@@ -493,7 +519,7 @@ function App() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="block text-xl font-bold text-primary">$155</span>
+                    <span className="block text-xl font-bold text-primary">1550 DH</span>
                     <span className="text-[10px] text-slate-400 uppercase font-bold tracking-tighter">
                       per day
                     </span>
@@ -522,7 +548,7 @@ function App() {
               </div>
               <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
-      <div>
+                  <div>
                     <h4 className="font-bold text-lg mb-1">Land Rover Defender</h4>
                     <div className="flex items-center gap-1 text-amber-500">
                       <span className="material-symbols-outlined !text-sm fill-1">star</span>
@@ -532,7 +558,7 @@ function App() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="block text-xl font-bold text-primary">$120</span>
+                    <span className="block text-xl font-bold text-primary">1200 DH</span>
                     <span className="text-[10px] text-slate-400 uppercase font-bold tracking-tighter">
                       per day
                     </span>
@@ -571,7 +597,7 @@ function App() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="block text-xl font-bold text-primary">$72</span>
+                    <span className="block text-xl font-bold text-primary">720 DH</span>
                     <span className="text-[10px] text-slate-400 uppercase font-bold tracking-tighter">
                       per day
                     </span>
@@ -583,8 +609,8 @@ function App() {
                 >
                   View details
                   <span className="material-symbols-outlined !text-sm">arrow_forward</span>
-        </a>
-      </div>
+                </a>
+              </div>
             </div>
           </div>
         </section>
@@ -603,8 +629,8 @@ function App() {
               <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-xs">
                 The world&apos;s largest car sharing marketplace where you can book any car you
                 want, wherever you want it.
-        </p>
-      </div>
+              </p>
+            </div>
 
             <div>
               <h5 className="font-bold text-sm uppercase tracking-wider mb-6 text-slate-900 dark:text-slate-100">
@@ -794,7 +820,7 @@ function App() {
           </div>
         </div>
       </footer>
-    </div>
+    </div >
   )
 }
 
