@@ -22,3 +22,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+GITHUB_ACTIONS_VARIABLES.md
