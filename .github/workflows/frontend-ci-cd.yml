@@ -9,7 +9,7 @@ on:
       - "vite.config.ts"
       - "tsconfig*.json"
   push:
-    branches: [main]
+    branches: [feature/pipeline]
 
 env:
   NODE_VERSION: "20"
@@ -54,7 +54,7 @@ jobs:
 
   deploy:
     needs: build-test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/feature/pipeline'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
