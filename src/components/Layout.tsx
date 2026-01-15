@@ -32,7 +32,7 @@ export default function Layout() {
                         <div className="p-2 bg-primary rounded-lg text-white">
                             <span className="material-symbols-outlined text-2xl">directions_car</span>
                         </div>
-                        <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white font-display">DriveShare</h1>
+                        <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white font-display">iRent</h1>
                     </Link>
 
                     {/* Desktop Nav */}
@@ -148,7 +148,7 @@ export default function Layout() {
                                 <div className="p-1.5 bg-primary rounded text-white">
                                     <span className="material-symbols-outlined text-lg">directions_car</span>
                                 </div>
-                                <span className="font-bold text-lg tracking-tight font-display">DriveShare</span>
+                                <span className="font-bold text-lg tracking-tight font-display">iRent</span>
                             </div>
                             <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-xs">
                                 The world&apos;s largest car sharing marketplace where you can book any car you
@@ -205,7 +205,7 @@ export default function Layout() {
 
                     <div className="pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
                         <p className="text-xs text-slate-500 dark:text-slate-500">
-                            © 2024 DriveShare Marketplace. All rights reserved.
+                            © 2024 iRent Marketplace. All rights reserved.
                         </p>
                         <div className="flex items-center gap-6">
                             <a className="text-slate-400 hover:text-primary transition-colors" href="#"><span className="material-symbols-outlined text-lg">language</span></a>

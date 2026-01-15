@@ -88,6 +88,11 @@ export default function Home() {
         setError(null)
     }
 
+    // Dynamic Page Title
+    useEffect(() => {
+        document.title = 'iRent | Home'
+    }, [])
+
     return (
         <>
             <section className="relative w-full h-auto min-h-[500px] lg:h-[680px] pt-28 pb-12 lg:pb-0">
