@@ -17,8 +17,10 @@ env:
   IMAGE_NAME: frontend
   REGISTRY: ghcr.io
   AWS_REGION: ${{ secrets.AWS_REGION }}
-  ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
-  ECS_SERVICE: ${{ secrets.ECS_SERVICE }}
+  # ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
+  # ECS_SERVICE: ${{ secrets.ECS_SERVICE }}
+  ECS_CLUSTER: api-service-cluster
+  ECS_SERVICE: api-service-app-service
   ECS_TASK_DEFINITION: ${{ secrets.ECS_TASK_DEFINITION }}
   AWS_ROLE_ARN: arn:aws:iam::954976302452:role/github-actions-role
 
@@ -96,8 +98,8 @@ jobs:
       - name: Update ECS service
         run: |
           aws ecs update-service \
-            --cluster ${{ secrets.ECS_CLUSTER }} \
-            --service ${{ secrets.ECS_SERVICE }} \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --service ${{ env.ECS_SERVICE }} \
             --task-definition ${{ steps.task-def.outputs.task_arn }} \
             --force-new-deployment
 
