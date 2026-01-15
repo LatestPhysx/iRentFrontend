@@ -101,7 +101,7 @@ jobs:
             --task-definition ${{ steps.task-def.outputs.task_arn }} \
             --force-new-deployment
 
-          echo "✅ ECS service updated with new task definition"
+          echo "✅ ECS service updated with new task "
           echo "🚀 Deployment initiated for image: ${{ env.REGISTRY }}/${{ steps.repo-name.outputs.repo_owner_lower }}/${{ steps.repo-name.outputs.repo_name_lower }}:${{ github.sha }}"
 
   containerize:
