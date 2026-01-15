@@ -6,6 +6,7 @@ export default {
     extend: {
       colors: {
         "primary": "#673ab6",
+        "driveflow-primary": "#7e36e2",
         "status-available": "#98A869",
         "background-light": "#f7f6f8",
         "background-dark": "#18141e",

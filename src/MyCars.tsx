@@ -75,7 +75,10 @@ const MyCars = () => {
                                     <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl">search</span>
                                     <input className="pl-10 pr-4 py-2 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-primary focus:border-primary w-64" placeholder="Search cars..." type="text" />
                                 </div>
-                                <button className="bg-primary text-white px-6 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+                                <button
+                                    className="bg-primary text-white px-6 py-2.5 rounded-lg font-bold text-sm flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+                                    onClick={() => window.location.href = '/owner/cars/new'}
+                                >
                                     <span className="material-symbols-outlined text-lg">add_circle</span>
                                     Add New Car
                                 </button>
@@ -225,7 +228,10 @@ const MyCars = () => {
                                 </div>
                             </div>
                             {/* Add New Placeholder */}
-                            <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl flex flex-col items-center justify-center p-8 bg-gray-50/50 dark:bg-gray-800/30 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all cursor-pointer group h-full min-h-[340px]">
+                            <div
+                                className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl flex flex-col items-center justify-center p-8 bg-gray-50/50 dark:bg-gray-800/30 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all cursor-pointer group h-full min-h-[340px]"
+                                onClick={() => window.location.href = '/owner/cars/new'}
+                            >
                                 <div className="w-14 h-14 rounded-full bg-white dark:bg-gray-700 shadow-md flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                                     <span className="material-symbols-outlined text-primary text-3xl font-bold">add</span>
                                 </div>
