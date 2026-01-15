@@ -65,7 +65,7 @@ const OwnerDashboard = () => {
                             </a>
                             <a
                                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#726a81] hover:bg-[#f2f1f4] dark:hover:bg-[#2a2631] hover:text-[#141216] dark:hover:text-white transition-colors group"
-                                href="#"
+                                href="/owner/bookings"
                             >
                                 <span className="material-symbols-outlined text-[22px]">
                                     calendar_today
@@ -74,7 +74,7 @@ const OwnerDashboard = () => {
                             </a>
                             <a
                                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#726a81] hover:bg-[#f2f1f4] dark:hover:bg-[#2a2631] hover:text-[#141216] dark:hover:text-white transition-colors group"
-                                href="#"
+                                href="/owner/agency-profile"
                             >
                                 <span className="material-symbols-outlined text-[22px]">
                                     account_circle
@@ -86,7 +86,7 @@ const OwnerDashboard = () => {
                         <div className="pt-6 border-t border-[#e0dde3] dark:border-[#2a2631] flex flex-col gap-1.5">
                             <a
                                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#726a81] hover:bg-[#f2f1f4] dark:hover:bg-[#2a2631] hover:text-[#141216] dark:hover:text-white transition-colors group"
-                                href="#"
+                                href="/owner/agency-profile"
                             >
                                 <span className="material-symbols-outlined text-[22px]">
                                     settings
@@ -320,8 +320,8 @@ const OwnerDashboard = () => {
                         </section>
                     </div>
                 </main>
-            </div>
-        </div>
+            </div >
+        </div >
     )
 }
 
