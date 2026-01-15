@@ -1,83 +1,129 @@
-## iRent Morocco Frontend
+iRent Morocco Frontend
 
-This project currently renders the AutoShare-style **Login / Register** flow built with **React + Vite + Tailwind CSS v4**.
+This project includes:
 
-### How to run the project
+DriveShare-style Car Details page (from Sabir/Car_Detail branch).
 
-1. **Install dependencies**
-   - In the project root run:
+AutoShare-style Login / Register flow (from main branch).
 
-   ```bash
-   npm install
-   ```
-   - Also install routing dependency (once):
+It’s built with React + Vite + Tailwind CSS v4 and uses react-router-dom for routing.
 
-   ```bash
-   npm install react-router-dom
-   ```
+1. Install Dependencies
 
-2. **Start the dev server**
-   - From the same folder run:
+From the project root:
 
-   ```bash
-   npm run dev
-   ```
+npm install
 
-3. **Open the app**
-   - Open the URL printed in the terminal (usually `http://localhost:5173`) in your browser.
 
-### Auth page structure (Login / Register)
+Install routing (if not installed yet):
 
-- **Entry point**
-  - `App.tsx` sets up React Router and defines routes:
-    - `/` → `HomePage` (simple landing page with a button to go to auth).
-    - `/auth` → `AuthPage` (full login / register flow).
+npm install react-router-dom
 
-- **Auth UI component**
-  - `AuthPage.tsx` contains the full design of the AutoShare auth flow:
-    - **Sign In** screen.
-    - **Create an account – Account Type** (Regular User / Car Rental Company).
-    - **Register – Basic Info**.
-    - **Register – Final Details**.
-  - The component internally manages which step is visible using React state so everything stays on one page, exactly like the provided design.
+2. Running the Development Server
+npm run dev
 
-### Styling and design details
 
-- **Tailwind configuration (CSS-only, Tailwind v4)**
-  - `src/index.css`:
-    - Imports Tailwind: `@import "tailwindcss";`
-    - Defines theme tokens with `@theme` to match the Figma/HTML:
-      - **Colors**: `primary`, `background-light`, `background-dark`.
-      - **Fonts**: `display` (`Space Grotesk`), `sans` (`Noto Sans`).
-      - **Border radius**: `lg`, `xl`, `full`.
-    - Sets base `body` styles (no centering, full-height page, correct font family).
-    - Adds the `.material-symbols-outlined` rule so Material Symbols icons render correctly.
+Open the URL printed in the terminal (usually http://localhost:5173) in your browser.
 
-- **Global HTML head / fonts / icons**
-  - `index.html`:
-    - Sets `<html lang="en" class="light">` to match the design’s light-mode default.
-    - Adds Google Fonts for:
-      - `Space Grotesk` (display headings).
-      - `Noto Sans` (body text).
-    - Adds the **Material Symbols Outlined** font for the icon set used in the design.
+3. Pages / Routes
+DriveShare Car Details
 
-- **Tailwind utility classes**
-  - All layout and spacing are controlled with Tailwind classNames inside `AuthPage.tsx` and mirror the provided static HTML exactly (sections, paddings, font sizes, colors, and shadows).
+Home page (DriveShare-style): /drive-home
 
-### How to edit the Auth UI
+File: src/App.tsx → Home component
 
-- To tweak text, labels, or button behavior:
-  - Open `src/AuthPage.tsx` and edit the JSX directly.
-- To change colors, fonts, or radii globally while keeping the structure:
-  - Update the tokens in `src/index.css` under the `@theme` block.
-- To hook up real backend logic later:
-  - Replace the current dummy `onClick` handlers and form `onSubmit` with your API calls or router navigation, keeping the JSX / Tailwind classes the same so the design stays identical.
+Contains a welcome message and link to car details.
 
-### Routes overview
+Car Details page: /car-details
 
-- `/` (Home)
-  - File: `HomePage.tsx`
-  - Simple branded landing screen with a button that links to `/auth`.
-- `/auth` (Login / Register)
-  - File: `AuthPage.tsx`
-  - Contains the complete AutoShare-style Sign In + multi-step registration flow.
+File: src/components/CarDetails.tsx
+
+Displays car images, specifications, availability, and host info.
+
+AutoShare Auth Flow
+
+Landing/HomePage: /
+
+File: HomePage.tsx
+
+Simple landing screen with a button linking to auth.
+
+AuthPage (Login / Register): /auth
+
+File: AuthPage.tsx
+
+Includes:
+
+Sign In
+
+Create account – Account Type (Regular / Rental Company)
+
+Register – Basic Info
+
+Register – Final Details
+
+Uses React state to manage multi-step flow.
+
+Owner / Agency Pages
+
+/owner-dashboard → OwnerDashboard
+
+/owner/cars → MyCars
+
+/owner/cars/new → AddCarBasic
+
+/owner/cars/new/media → AddCarMedia
+
+/owner/cars/new/pricing → AddCarPricing
+
+/owner/bookings → OwnerBookings
+
+/owner/agency-profile → AgencyProfile
+
+4. Styling and Design
+
+Tailwind Configuration (src/index.css):
+
+Imports Tailwind: @import "tailwindcss";
+
+Uses theme tokens for:
+
+Colors: primary, accent, background-light, background-dark
+
+Fonts: display (Space Grotesk), sans (Noto Sans, Inter)
+
+Border radius: lg, xl, full
+
+Sets body styles for full height, font family, and responsiveness.
+
+Adds .material-symbols-outlined rule for icons.
+
+Fonts and Icons (index.html):
+
+Google Fonts:
+
+Space Grotesk (display headings)
+
+Noto Sans (body text)
+
+Inter / Montserrat (additional headings and text)
+
+Material Symbols Outlined for iconography.
+
+5. Editing UI / Components
+
+Auth flow: Edit JSX in src/AuthPage.tsx.
+
+DriveShare CarDetails: Edit src/components/CarDetails.tsx.
+
+Theme / Colors / Fonts: Update src/index.css under @theme.
+
+Navigation / Routes: Update src/App.tsx.
+
+6. Notes
+
+DriveShare pages use /drive-home and /car-details to avoid conflict with main / HomePage.
+
+Theme toggle and navbar/footer are applied globally.
+
+All routes work in a single <BrowserRouter> wrapper.
