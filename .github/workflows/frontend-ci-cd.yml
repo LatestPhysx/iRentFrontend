@@ -83,7 +83,7 @@ jobs:
             --query 'taskDefinition' \
             --output json)
 
-          NEW_TASK_DEF=$(echo $TASK_DEFINITION | jq --arg IMAGE "${{ env.REGISTRY }}/${{ steps.repo-name.outputs.repo_owner_lower }}/${{ steps.repo-name.outputs.repo_name_lower }}:${{ github.sha }}" \
+          NEW_TASK_DEF=$(echo $TASK_DEFINITION | jq --arg IMAGE "${{ env.REGISTRY }}/${{ steps.repo-name.outputs.repo_owner_lower }}/${{ steps.repo-name.outputs.repo_name_lower }}:latest" \
             '.containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)')
 
           NEW_TASK_ARN=$(aws ecs register-task-definition \
@@ -102,8 +102,8 @@ jobs:
             --task-definition ${{ steps.task-def.outputs.task_arn }} \
             --force-new-deployment
 
-          echo "✅ ECS service updated with new task "
-          echo "🚀 Deployment initiated for image: ${{ env.REGISTRY }}/${{ steps.repo-name.outputs.repo_owner_lower }}/${{ steps.repo-name.outputs.repo_name_lower }}:${{ github.sha }}"
+          echo "✅ ECS service updated with new task definition"
+          echo "🚀 Deployment initiated for image: ${{ env.REGISTRY }}/${{ steps.repo-name.outputs.repo_owner_lower }}/${{ steps.repo-name.outputs.repo_name_lower }}:latest"
 
   containerize:
     needs: build-test
@@ -136,6 +136,9 @@ jobs:
         run: |
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           docker push ${{ env.REGISTRY }}/$OWNER/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker tag ${{ env.REGISTRY }}/$OWNER/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/$OWNER/${{ env.IMAGE_NAME }}:latest
+          docker push ${{ env.REGISTRY }}/$OWNER/${{ env.IMAGE_NAME }}:latest
+          echo "✅ Pushed tags: ${{ github.sha }} and latest"
 
       - name: Init DORA CSV
         if: always()
