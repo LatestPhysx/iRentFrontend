@@ -20,7 +20,7 @@ env:
   ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
   ECS_SERVICE: ${{ secrets.ECS_SERVICE }}
   ECS_TASK_DEFINITION: ${{ secrets.ECS_TASK_DEFINITION }}
-  AWS_ROLE_ARN: arn:aws:iam::954976302452:role/github-actions-role
+  AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
   DORA_METRICS_REPO: ${{ github.repository_owner }}/dora-metrics
 
 jobs:
