@@ -226,7 +226,7 @@ const CarDetails = () => {
                             </div>
                             <div>
                                 <p className="text-sm font-bold">Hosted by Alexander K.</p>
-                                <p className="text-xs text-[#726a81]">Joined in 2021 • Response time: 1 hour</p>
+                                <p className="text-xs text-[#726a81]">Joined in 2025 • Response time: 1 hour</p>
                             </div>
                         </div>
                         <button className="text-primary font-bold text-sm border border-primary/20 px-4 py-2 rounded-lg hover:bg-primary/5">Contact Host</button>
