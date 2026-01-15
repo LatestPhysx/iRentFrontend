@@ -16,12 +16,11 @@ env:
   NODE_VERSION: "20"
   IMAGE_NAME: frontend
   REGISTRY: ghcr.io
-  
   AWS_REGION: ${{ secrets.AWS_REGION }}
   ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
   ECS_SERVICE: ${{ secrets.ECS_SERVICE }}
   ECS_TASK_DEFINITION: ${{ secrets.ECS_TASK_DEFINITION }}
-  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+  AWS_ROLE_ARN: arn:aws:iam::954976302452:role/github-actions-role
 
 jobs:
   build-test:
@@ -56,22 +55,54 @@ jobs:
 
   deploy:
     needs: containerize
-    if: github.event_name == 'push' && github.ref == 'refs/heads/feature/pipeline'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      - name: Set lowercase repository name
+        id: repo-name
+        run: |
+          echo "repo_owner_lower=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+          echo "repo_name_lower=$(echo '${{ github.event.repository.name }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Update ECS task definition
+        id: task-def
+        run: |
+          TASK_DEFINITION=$(aws ecs describe-task-definition \
+            --task-definition ${{ secrets.ECS_TASK_DEFINITION }} \
+            --query 'taskDefinition' \
+            --output json)
 
-      - name: Build
-        run: npm run build
+          NEW_TASK_DEF=$(echo $TASK_DEFINITION | jq --arg IMAGE "${{ env.REGISTRY }}/${{ steps.repo-name.outputs.repo_owner_lower }}/${{ steps.repo-name.outputs.repo_name_lower }}:${{ github.sha }}" \
+            '.containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)')
+
+          NEW_TASK_ARN=$(aws ecs register-task-definition \
+            --cli-input-json "$NEW_TASK_DEF" \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+
+          echo "task_arn=$NEW_TASK_ARN" >> $GITHUB_OUTPUT
+          echo "✅ New task definition: $NEW_TASK_ARN"
+
+      - name: Update ECS service
+        run: |
+          aws ecs update-service \
+            --cluster ${{ secrets.ECS_CLUSTER }} \
+            --service ${{ secrets.ECS_SERVICE }} \
+            --task-definition ${{ steps.task-def.outputs.task_arn }} \
+            --force-new-deployment
+
+          echo "✅ ECS service updated with new task definition"
+          echo "🚀 Deployment initiated for image: ${{ env.REGISTRY }}/${{ steps.repo-name.outputs.repo_owner_lower }}/${{ steps.repo-name.outputs.repo_name_lower }}:${{ github.sha }}"
 
   containerize:
     needs: build-test
@@ -104,87 +135,6 @@ jobs:
         run: |
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           docker push ${{ env.REGISTRY }}/$OWNER/${{ env.IMAGE_NAME }}:${{ github.sha }}
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Tag and push image to ECR
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          ECR_REGISTRY_RAW="${ECR_REGISTRY}"
-          # strip any trailing slashes from registry
-          ECR_REGISTRY_CLEAN=$(echo "$ECR_REGISTRY_RAW" | sed 's:/*$::')
-          echo "ECR_REGISTRY_RAW=$ECR_REGISTRY_RAW"
-          echo "ECR_REGISTRY_CLEAN=$ECR_REGISTRY_CLEAN"
-          echo "ECR_REPOSITORY=${{ env.ECR_REPOSITORY }}"
-          if [ -z "${{ env.ECR_REPOSITORY }}" ]; then
-            echo "ERROR: ECR_REPOSITORY is empty. Set the secret ECR_REPOSITORY_FRONTEND."; exit 1
-          fi
-
-          SRC="${{ env.REGISTRY }}/$OWNER/${{ env.IMAGE_NAME }}:${{ github.sha }}"
-          docker pull "$SRC"
-          docker tag "$SRC" "$ECR_REGISTRY_CLEAN/${{ env.ECR_REPOSITORY }}:${{ github.sha }}"
-          docker tag "$SRC" "$ECR_REGISTRY_CLEAN/${{ env.ECR_REPOSITORY }}:latest"
-          docker push "$ECR_REGISTRY_CLEAN/${{ env.ECR_REPOSITORY }}:${{ github.sha }}"
-          docker push "$ECR_REGISTRY_CLEAN/${{ env.ECR_REPOSITORY }}:latest"
-
-      - name: Download task definition
-        run: |
-          aws ecs describe-task-definition \
-            --task-definition ${{ env.ECS_TASK_DEFINITION }} \
-            --query taskDefinition > task-definition.json
-
-      - name: Verify ECS cluster and service exist
-        run: |
-          set -euo pipefail
-          CLUSTER="${{ env.ECS_CLUSTER }}"
-          SERVICE="${{ env.ECS_SERVICE }}"
-          echo "Verifying ECS cluster='$CLUSTER' service='$SERVICE'"
-          if [ -z "$CLUSTER" ] || [ -z "$SERVICE" ]; then
-            echo "ERROR: ECS_CLUSTER or ECS_SERVICE environment variable is empty."; exit 1
-          fi
-          DESCRIBE=$(aws ecs describe-services --cluster "$CLUSTER" --services "$SERVICE" --output json)
-          echo "$DESCRIBE"
-          FAILURES=$(echo "$DESCRIBE" | jq -r '.failures | length')
-          if [ "$FAILURES" != "0" ]; then
-            echo "ERROR: ECS describe-services returned failures:"; echo "$DESCRIBE" | jq -r '.failures'; exit 1
-          fi
-          STATUS=$(echo "$DESCRIBE" | jq -r '.services[0].status')
-          if [ "$STATUS" = "" ] || [ "$STATUS" = "MISSING" ] || [ "$STATUS" = "INACTIVE" ]; then
-            echo "ERROR: ECS service status is unexpected: $STATUS"; exit 1
-          fi
-
-      - name: Get container name from task definition
-        id: get-name
-        run: |
-          CONTAINER_NAME=$(jq -r '.containerDefinitions[0].name' task-definition.json)
-          echo "container_name=$CONTAINER_NAME" >> $GITHUB_OUTPUT
-
-      - name: Update task definition with new image
-        id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: task-definition.json
-          container-name: ${{ steps.get-name.outputs.container_name }}
-          image: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
-
-      - name: Deploy to ECS
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ env.ECS_SERVICE }}
-          cluster: ${{ env.ECS_CLUSTER }}
-          wait-for-service-stability: true
 
       - name: Init DORA CSV
         if: always()
