@@ -10,6 +10,11 @@ This project currently renders the AutoShare-style **Login / Register** flow bui
    ```bash
    npm install
    ```
+   - Also install routing dependency (once):
+
+   ```bash
+   npm install react-router-dom
+   ```
 
 2. **Start the dev server**
    - From the same folder run:
@@ -24,7 +29,9 @@ This project currently renders the AutoShare-style **Login / Register** flow bui
 ### Auth page structure (Login / Register)
 
 - **Entry point**
-  - `App.tsx` renders the auth experience by returning the `AuthPage` component.
+  - `App.tsx` sets up React Router and defines routes:
+    - `/` → `HomePage` (simple landing page with a button to go to auth).
+    - `/auth` → `AuthPage` (full login / register flow).
 
 - **Auth UI component**
   - `AuthPage.tsx` contains the full design of the AutoShare auth flow:
@@ -65,3 +72,12 @@ This project currently renders the AutoShare-style **Login / Register** flow bui
   - Update the tokens in `src/index.css` under the `@theme` block.
 - To hook up real backend logic later:
   - Replace the current dummy `onClick` handlers and form `onSubmit` with your API calls or router navigation, keeping the JSX / Tailwind classes the same so the design stays identical.
+
+### Routes overview
+
+- `/` (Home)
+  - File: `HomePage.tsx`
+  - Simple branded landing screen with a button that links to `/auth`.
+- `/auth` (Login / Register)
+  - File: `AuthPage.tsx`
+  - Contains the complete AutoShare-style Sign In + multi-step registration flow.

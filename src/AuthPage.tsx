@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 
 type View =
   | 'sign-in'
@@ -8,9 +8,73 @@ type View =
 
 type Theme = 'light' | 'dark'
 
+interface RegisterData {
+  role: 'ROLE_RENTER' | 'ROLE_VEHICLE_OWNER' | null
+  firstName: string
+  lastName: string
+  email: string
+  password: string
+  confirmPassword: string
+  phoneNumber: string
+  country: string
+  city: string
+  agreeToTerms: boolean
+}
+
+const LOCATIONS: Record<string, { label: string; cities: string[]; phonePlaceholder: string }> = {
+  us: {
+    label: 'United States',
+    cities: ['New York', 'Los Angeles', 'Chicago'],
+    phonePlaceholder: '+1 (555) 000-0000'
+  },
+  ca: {
+    label: 'Canada',
+    cities: ['Toronto', 'Vancouver', 'Montreal'],
+    phonePlaceholder: '+1 (555) 000-0000'
+  },
+  uk: {
+    label: 'United Kingdom',
+    cities: ['London', 'Manchester', 'Birmingham'],
+    phonePlaceholder: '+44 7911 123456'
+  },
+  au: {
+    label: 'Australia',
+    cities: ['Sydney', 'Melbourne', 'Brisbane'],
+    phonePlaceholder: '+61 400 123 456'
+  },
+  ma: {
+    label: 'Morocco',
+    cities: ['Casablanca', 'Rabat', 'Marrakech'],
+    phonePlaceholder: '+212 600-000000'
+  }
+}
+
+interface LoginData {
+  email: string
+  password: string
+}
+
 const AuthPage = () => {
   const [view, setView] = useState<View>('sign-in')
   const [theme, setTheme] = useState<Theme>('light')
+
+  const [registerData, setRegisterData] = useState<RegisterData>({
+    role: null,
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    phoneNumber: '',
+    country: '',
+    city: '',
+    agreeToTerms: false
+  })
+
+  const [loginData, setLoginData] = useState<LoginData>({
+    email: '',
+    password: ''
+  })
 
   // Initialize theme from localStorage (default to light to match design)
   useEffect(() => {
@@ -41,8 +105,74 @@ const AuthPage = () => {
 
   const goToRegister = () => setView('register-account-type')
   const goToSignIn = () => setView('sign-in')
-  const goToBasicInfo = () => setView('register-basic-info')
-  const goToFinalDetails = () => setView('register-final-details')
+  const goToBasicInfo = () => {
+    if (!registerData.role) {
+      alert('Please select an account type')
+      return
+    }
+    setView('register-basic-info')
+  }
+  const goToFinalDetails = () => {
+    if (!registerData.firstName || !registerData.lastName || !registerData.email || !registerData.password) {
+      alert('Please fill in all required fields')
+      return
+    }
+    if (registerData.password !== registerData.confirmPassword) {
+      alert('Passwords do not match')
+      return
+    }
+    setView('register-final-details')
+  }
+
+  const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { type, name, value, checked } = e.target
+    setLoginData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }))
+  }
+
+  const handleRegisterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target
+    const checked = (e.target as HTMLInputElement).checked
+
+    setRegisterData(prev => {
+      // If country changes, reset city
+      if (name === 'country') {
+        return {
+          ...prev,
+          country: value,
+          city: ''
+        }
+      }
+      return {
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value
+      }
+    })
+  }
+
+  const handleLoginSubmit = (e: FormEvent) => {
+    e.preventDefault()
+    console.log('Login Payload:', loginData)
+    // TODO: Connect to backend API
+  }
+
+  const handleRegisterSubmit = (e: FormEvent) => {
+    e.preventDefault()
+    if (!registerData.agreeToTerms) {
+      alert('You must agree to the Terms of Service and Privacy Policy')
+      return
+    }
+
+    const payload = {
+      ...registerData,
+      phoneNumber: registerData.phoneNumber || null // Send null if empty (matches DB unique constraint)
+    }
+
+    console.log('Register Payload:', payload)
+    // TODO: Connect to backend API
+  }
 
   if (view === 'sign-in') {
     return (
@@ -110,7 +240,7 @@ const AuthPage = () => {
               </span>
               <div className="flex-grow border-t border-[#e0dde3] dark:border-[#332e3d]" />
             </div>
-            <form className="space-y-5">
+            <form className="space-y-5" onSubmit={handleLoginSubmit}>
               <div className="space-y-1.5">
                 <label className="text-sm font-semibold text-[#141216] dark:text-[#e0dde3] ml-1">
                   Email
@@ -120,6 +250,9 @@ const AuthPage = () => {
                   placeholder="name@email.com"
                   required
                   type="email"
+                  name="email"
+                  value={loginData.email}
+                  onChange={handleLoginChange}
                 />
               </div>
               <div className="space-y-1.5">
@@ -140,6 +273,9 @@ const AuthPage = () => {
                     placeholder="Enter password"
                     required
                     type="password"
+                    name="password"
+                    value={loginData.password}
+                    onChange={handleLoginChange}
                   />
                   <button
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-[#726a81] hover:text-primary"
@@ -282,8 +418,11 @@ const AuthPage = () => {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl mb-12">
-            <button className="group relative flex flex-col items-start p-8 bg-white dark:bg-[#211d29] border-2 border-transparent hover:border-primary/50 focus:border-primary ring-offset-2 transition-all rounded-2xl shadow-sm text-left">
-              <div className="w-14 h-14 bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-colors">
+            <button
+              onClick={() => setRegisterData(prev => ({ ...prev, role: 'ROLE_RENTER' }))}
+              className={`group relative flex flex-col items-start p-8 bg-white dark:bg-[#211d29] border-2 ${registerData.role === 'ROLE_RENTER' ? 'border-primary ring-2 ring-primary/20' : 'border-transparent hover:border-primary/50'} focus:border-primary ring-offset-2 transition-all rounded-2xl shadow-sm text-left`}
+            >
+              <div className={`w-14 h-14 bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-colors ${registerData.role === 'ROLE_RENTER' ? 'bg-primary text-white' : ''}`}>
                 <span className="material-symbols-outlined text-3xl">
                   person
                 </span>
@@ -292,14 +431,17 @@ const AuthPage = () => {
               <p className="text-[#726a81] dark:text-[#a199b0] text-sm leading-relaxed">
                 I want to rent cars for my personal trips or daily commutes.
               </p>
-              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className={`absolute top-4 right-4 ${registerData.role === 'ROLE_RENTER' ? 'opacity-100' : 'opacity-0'} group-hover:opacity-100 transition-opacity`}>
                 <span className="material-symbols-outlined text-primary">
                   check_circle
                 </span>
               </div>
             </button>
-            <button className="group relative flex flex-col items-start p-8 bg-white dark:bg-[#211d29] border-2 border-transparent hover:border-primary/50 focus:border-primary ring-offset-2 transition-all rounded-2xl shadow-sm text-left">
-              <div className="w-14 h-14 bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-colors">
+            <button
+              onClick={() => setRegisterData(prev => ({ ...prev, role: 'ROLE_VEHICLE_OWNER' }))}
+              className={`group relative flex flex-col items-start p-8 bg-white dark:bg-[#211d29] border-2 ${registerData.role === 'ROLE_VEHICLE_OWNER' ? 'border-primary ring-2 ring-primary/20' : 'border-transparent hover:border-primary/50'} focus:border-primary ring-offset-2 transition-all rounded-2xl shadow-sm text-left`}
+            >
+              <div className={`w-14 h-14 bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-colors ${registerData.role === 'ROLE_VEHICLE_OWNER' ? 'bg-primary text-white' : ''}`}>
                 <span className="material-symbols-outlined text-3xl">
                   corporate_fare
                 </span>
@@ -308,7 +450,7 @@ const AuthPage = () => {
               <p className="text-[#726a81] dark:text-[#a199b0] text-sm leading-relaxed">
                 I represent a business and want to list a fleet of vehicles.
               </p>
-              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className={`absolute top-4 right-4 ${registerData.role === 'ROLE_VEHICLE_OWNER' ? 'opacity-100' : 'opacity-0'} group-hover:opacity-100 transition-opacity`}>
                 <span className="material-symbols-outlined text-primary">
                   check_circle
                 </span>
@@ -441,21 +583,45 @@ const AuthPage = () => {
                 </p>
               </div>
               <form className="space-y-6">
-                <div className="flex flex-col w-full">
-                  <label className="text-sm font-semibold pb-2 text-[#141216] dark:text-[#e0dde3]">
-                    Full Name
-                  </label>
-                  <input
-                    className="w-full rounded-lg text-[#141216] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#e0dde3] dark:border-[#332e3d] bg-white dark:bg-[#18141e] h-12 placeholder:text-[#a199b0] px-4 text-base font-normal transition-all"
-                    placeholder="Enter your full name"
-                    type="text"
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="flex flex-col w-full">
+                    <label className="text-sm font-semibold pb-2 text-[#141216] dark:text-[#e0dde3]">
+                      First Name
+                    </label>
+                    <input
+                      name="firstName"
+                      required
+                      value={registerData.firstName}
+                      onChange={handleRegisterChange}
+                      className="w-full rounded-lg text-[#141216] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#e0dde3] dark:border-[#332e3d] bg-white dark:bg-[#18141e] h-12 placeholder:text-[#a199b0] px-4 text-base font-normal transition-all"
+                      placeholder="Enter your first name"
+                      type="text"
+                    />
+                  </div>
+                  <div className="flex flex-col w-full">
+                    <label className="text-sm font-semibold pb-2 text-[#141216] dark:text-[#e0dde3]">
+                      Last Name
+                    </label>
+                    <input
+                      name="lastName"
+                      required
+                      value={registerData.lastName}
+                      onChange={handleRegisterChange}
+                      className="w-full rounded-lg text-[#141216] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#e0dde3] dark:border-[#332e3d] bg-white dark:bg-[#18141e] h-12 placeholder:text-[#a199b0] px-4 text-base font-normal transition-all"
+                      placeholder="Enter your last name"
+                      type="text"
+                    />
+                  </div>
                 </div>
                 <div className="flex flex-col w-full">
                   <label className="text-sm font-semibold pb-2 text-[#141216] dark:text-[#e0dde3]">
                     Email Address
                   </label>
                   <input
+                    name="email"
+                    required
+                    value={registerData.email}
+                    onChange={handleRegisterChange}
                     className="w-full rounded-lg text-[#141216] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#e0dde3] dark:border-[#332e3d] bg-white dark:bg-[#18141e] h-12 placeholder:text-[#a199b0] px-4 text-base font-normal transition-all"
                     placeholder="name@example.com"
                     type="email"
@@ -468,6 +634,10 @@ const AuthPage = () => {
                     </label>
                     <div className="flex w-full items-stretch rounded-lg group">
                       <input
+                        name="password"
+                        required
+                        value={registerData.password}
+                        onChange={handleRegisterChange}
                         className="w-full rounded-lg text-[#141216] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#e0dde3] dark:border-[#332e3d] bg-white dark:bg-[#18141e] h-12 placeholder:text-[#a199b0] px-4 rounded-r-none border-r-0 text-base font-normal transition-all"
                         placeholder="Create password"
                         type="password"
@@ -485,6 +655,10 @@ const AuthPage = () => {
                     </label>
                     <div className="flex w-full items-stretch rounded-lg group">
                       <input
+                        name="confirmPassword"
+                        required
+                        value={registerData.confirmPassword}
+                        onChange={handleRegisterChange}
                         className="w-full rounded-lg text-[#141216] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#e0dde3] dark:border-[#332e3d] bg-white dark:bg-[#18141e] h-12 placeholder:text-[#a199b0] px-4 rounded-r-none border-r-0 text-base font-normal transition-all"
                         placeholder="Confirm password"
                         type="password"
@@ -621,7 +795,7 @@ const AuthPage = () => {
                 Just a few more things to get you on the road.
               </p>
             </div>
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleRegisterSubmit}>
               <div className="flex flex-col w-full">
                 <div className="flex justify-between items-center pb-2">
                   <label className="text-sm font-medium text-[#141216] dark:text-[#e0dde3]">
@@ -636,9 +810,12 @@ const AuthPage = () => {
                     call
                   </span>
                   <input
+                    name="phoneNumber"
                     className="w-full rounded-lg text-[#141216] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#e0dde3] dark:border-[#332e3d] bg-white dark:bg-[#18141e] h-12 placeholder:text-[#726a81] pl-11 pr-4 text-base font-normal transition-all"
-                    placeholder="+1 (555) 000-0000"
+                    placeholder={registerData.country ? LOCATIONS[registerData.country]?.phonePlaceholder : '+1 (555) 000-0000'}
                     type="tel"
+                    value={registerData.phoneNumber}
+                    onChange={handleRegisterChange}
                   />
                 </div>
               </div>
@@ -648,14 +825,20 @@ const AuthPage = () => {
                     Country
                   </label>
                   <div className="relative">
-                    <select className="w-full appearance-none rounded-lg text-[#141216] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#e0dde3] dark:border-[#332e3d] bg-white dark:bg-[#18141e] h-12 px-4 text-base font-normal transition-all" defaultValue="">
+                    <select
+                      name="country"
+                      className="w-full appearance-none rounded-lg text-[#141216] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#e0dde3] dark:border-[#332e3d] bg-white dark:bg-[#18141e] h-12 px-4 text-base font-normal transition-all"
+                      value={registerData.country}
+                      onChange={handleRegisterChange}
+                    >
                       <option value="" disabled>
                         Select country
                       </option>
-                      <option value="us">United States</option>
-                      <option value="ca">Canada</option>
-                      <option value="uk">United Kingdom</option>
-                      <option value="au">Australia</option>
+                      {Object.entries(LOCATIONS).map(([code, { label }]) => (
+                        <option key={code} value={code}>
+                          {label}
+                        </option>
+                      ))}
                     </select>
                     <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#726a81] pointer-events-none material-symbols-outlined">
                       expand_more
@@ -667,13 +850,21 @@ const AuthPage = () => {
                     City
                   </label>
                   <div className="relative">
-                    <select className="w-full appearance-none rounded-lg text-[#141216] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#e0dde3] dark:border-[#332e3d] bg-white dark:bg-[#18141e] h-12 px-4 text-base font-normal transition-all" defaultValue="">
+                    <select
+                      name="city"
+                      className="w-full appearance-none rounded-lg text-[#141216] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#e0dde3] dark:border-[#332e3d] bg-white dark:bg-[#18141e] h-12 px-4 text-base font-normal transition-all"
+                      value={registerData.city}
+                      onChange={handleRegisterChange}
+                      disabled={!registerData.country}
+                    >
                       <option value="" disabled>
-                        Select city
+                        {registerData.country ? 'Select city' : 'Select country first'}
                       </option>
-                      <option value="ny">New York</option>
-                      <option value="la">Los Angeles</option>
-                      <option value="ch">Chicago</option>
+                      {registerData.country && LOCATIONS[registerData.country]?.cities.map(city => (
+                        <option key={city} value={city}>
+                          {city}
+                        </option>
+                      ))}
                     </select>
                     <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#726a81] pointer-events-none material-symbols-outlined">
                       expand_more
@@ -688,6 +879,9 @@ const AuthPage = () => {
                       className="w-5 h-5 rounded border-[#e0dde3] dark:border-[#332e3d] text-primary focus:ring-primary/20 cursor-pointer"
                       required
                       type="checkbox"
+                      name="agreeToTerms"
+                      checked={registerData.agreeToTerms}
+                      onChange={handleRegisterChange}
                     />
                   </div>
                   <span className="text-sm text-[#726a81] dark:text-[#a199b0] leading-tight">
