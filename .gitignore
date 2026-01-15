@@ -25,3 +25,7 @@ dist-ssr
 .jar
 GITHUB_ACTIONS_VARIABLES.md
 .jar
+
+.gitignore
+.env
+SETUP_BACKEND_CONNECTION.md
