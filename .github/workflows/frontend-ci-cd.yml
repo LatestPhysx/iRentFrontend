@@ -10,7 +10,7 @@ on:
       - "vite.config.ts"
       - "tsconfig*.json"
   push:
-    branches: [feature/pipeline]
+    branches: [feature/pipeline, main]
 
 env:
   NODE_VERSION: "20"
