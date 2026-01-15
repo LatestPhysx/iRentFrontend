@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
-import { useTheme } from './hooks/useTheme';
+
 import './App.css';
 
 // Layout & Pages from Home_Page / main
@@ -35,107 +35,34 @@ const DriveHome = () => (
   </div>
 );
 
-const ThemeToggle = () => {
-  const { isDark, toggleTheme } = useTheme();
 
-  const handleClick = () => {
-    toggleTheme();
-    console.log('Theme toggled. Is dark:', !isDark);
-    console.log('HTML classes:', document.documentElement.classList.toString());
-  };
-
-  return (
-    <button
-      onClick={handleClick}
-      className="p-2 hover:bg-background-light dark:hover:bg-white/5 rounded-lg transition-colors"
-      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-    >
-      <span className="material-symbols-outlined text-lg">
-        {isDark ? 'light_mode' : 'dark_mode'}
-      </span>
-    </button>
-  );
-};
 
 function App() {
   return (
     <div className="bg-background-light dark:bg-background-dark text-[#141216] dark:text-white min-h-screen">
-      {/* Top Navigation */}
-      <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 w-[95%] max-w-[1200px] rounded-full bg-white/80 dark:bg-[#1C1C1E]/80 backdrop-blur-xl shadow-lg border border-white/20 dark:border-white/5 transition-all duration-300">
-        <div className="px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <div className="flex items-center gap-3">
-              <div className="size-9 bg-primary rounded-lg flex items-center justify-center text-white shadow-lg shadow-primary/30">
-                <span className="material-symbols-outlined text-lg">directions_car</span>
-              </div>
-              <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-                DriveShare
-              </span>
-            </div>
 
-            <div className="hidden md:flex items-center gap-6">
-              <a className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors" href="#">
-                Become a Host
-              </a>
-              <a className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors" href="#">
-                Browse Cars
-              </a>
-              <a className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors" href="#">
-                Help
-              </a>
-            </div>
-          </div>
 
-          <div className="flex items-center gap-5">
-            <ThemeToggle />
+      <Routes>
+        {/* DriveShare pages */}
+        <Route path="/drive-home" element={<DriveHome />} />
+        <Route path="/car-details" element={<CarDetails />} />
 
-            <div className="hidden sm:flex items-center gap-5">
-              <a className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors" href="#">
-                My Trips
-              </a>
-              <a className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors" href="#">
-                Messages
-              </a>
-            </div>
+        {/* Home_Page / AutoShare routes */}
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="cars" element={<AllCars />} />
+        </Route>
 
-            <div className="size-9 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700 cursor-pointer hover:border-primary transition-colors">
-              <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZgqoVwWRc6NXW5CmIcWQoMQVY-pex16ch4ehkTYAXsLCUGU5i5VoXzLp2HvUFu8AdOEjLZxlwaWUTgeHfNGAe26cwfc9PYjkuDkTwXUlQqhq8yA1TpXQtL4CHFki8XhFST2xywHejEPAI8BiypMak0XeXHPaxMhbxjnla1bFQOAl_pGuoVgufqvzvFO3ZBwPJzXOf6DCemK4wpBy042mwJcpSskBqoS7SlDQ1X9cNJjB2rJP9CPH6tnpD6mpDB94OhKDeZ0jRsn8"
-                alt="User Profile"
-                className="w-full h-full object-cover"
-              />
-            </div>
-
-            <button className="bg-primary text-white px-5 py-2 rounded-lg text-sm font-bold shadow-lg shadow-primary/30 hover:shadow-primary/40 hover:scale-105 transition-all">
-              List your car
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <BrowserRouter>
-        <Routes>
-          {/* DriveShare pages */}
-          <Route path="/drive-home" element={<DriveHome />} />
-          <Route path="/car-details" element={<CarDetails />} />
-
-          {/* Home_Page / AutoShare routes */}
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="cars" element={<AllCars />} />
-          </Route>
-
-          {/* Main branch routes */}
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="/owner-dashboard" element={<OwnerDashboard />} />
-          <Route path="/owner/cars" element={<MyCars />} />
-          <Route path="/owner/cars/new" element={<AddCarBasic />} />
-          <Route path="/owner/cars/new/media" element={<AddCarMedia />} />
-          <Route path="/owner/cars/new/pricing" element={<AddCarPricing />} />
-          <Route path="/owner/bookings" element={<OwnerBookings />} />
-          <Route path="/owner/agency-profile" element={<AgencyProfile />} />
-        </Routes>
-      </BrowserRouter>
+        {/* Main branch routes */}
+        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/owner-dashboard" element={<OwnerDashboard />} />
+        <Route path="/owner/cars" element={<MyCars />} />
+        <Route path="/owner/cars/new" element={<AddCarBasic />} />
+        <Route path="/owner/cars/new/media" element={<AddCarMedia />} />
+        <Route path="/owner/cars/new/pricing" element={<AddCarPricing />} />
+        <Route path="/owner/bookings" element={<OwnerBookings />} />
+        <Route path="/owner/agency-profile" element={<AgencyProfile />} />
+      </Routes>
 
       {/* Footer */}
       <footer className="bg-white dark:bg-background-dark border-t border-[#f2f1f4] dark:border-white/10 mt-20 py-12">
