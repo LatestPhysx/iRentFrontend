@@ -947,7 +947,7 @@ const AuthPage = () => {
           </a>
         </div>
         <div className="text-xs text-[#726a81] dark:text-[#a199b0]">
-          © 2024 AutoShare Inc. All rights reserved.
+          © 2026 iRent Inc. All rights reserved.
         </div>
       </footer>
     </div>
