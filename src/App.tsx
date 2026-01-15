@@ -120,7 +120,7 @@ function App() {
           </div>
         </div>
         <div className="max-w-[1200px] mx-auto px-6 pt-12 mt-12 border-t border-[#f2f1f4] dark:border-white/10 text-xs text-[#726a81] flex flex-col md:flex-row justify-between gap-4">
-          <p>© 2023 DriveShare. All rights reserved.</p>
+          <p>© 2025 DriveShare. All rights reserved.</p>
           <div className="flex gap-6">
             <a className="hover:underline" href="#">Privacy Policy</a>
             <a className="hover:underline" href="#">Terms of Service</a>
