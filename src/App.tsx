@@ -40,71 +40,94 @@ const ThemeToggle = () => {
 function App() {
   return (
     <div className="bg-background-light dark:bg-background-dark text-[#141216] dark:text-white min-h-screen">
-        {/* Top Navigation */}
-        <header className="sticky top-0 z-50 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-[#f2f1f4] dark:border-white/10">
-          <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
-            <div className="flex items-center gap-8">
-              <div className="flex items-center gap-3">
-                <div className="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
-                  <span className="material-symbols-outlined">directions_car</span>
-                </div>
-                <span className="text-xl font-bold tracking-tight">DriveShare</span>
+      {/* Top Navigation - Floating Pill */}
+      <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 w-[95%] max-w-[1200px] rounded-full bg-white/80 dark:bg-[#1C1C1E]/80 backdrop-blur-xl shadow-lg border border-white/20 dark:border-white/5 transition-all duration-300">
+        <div className="px-6 h-16 flex items-center justify-between">
+          {/* Left Side: Logo + Navigation */}
+          <div className="flex items-center gap-8">
+            {/* Logo */}
+            <div className="flex items-center gap-3">
+              <div className="size-9 bg-primary rounded-lg flex items-center justify-center text-white shadow-lg shadow-primary/30">
+                <span className="material-symbols-outlined text-lg">directions_car</span>
               </div>
-              <div className="hidden md:flex items-center gap-6">
-                <a className="text-sm font-medium hover:text-primary transition-colors" href="#">Browse Cars</a>
-                <a className="text-sm font-medium hover:text-primary transition-colors" href="#">How it works</a>
-              </div>
+              <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">DriveShare</span>
             </div>
-            <div className="flex items-center gap-4">
-              <a className="text-sm font-medium px-4 py-2 hover:bg-background-light dark:hover:bg-white/5 rounded-lg transition-colors" href="#">List your car</a>
-              <ThemeToggle />
-              <button className="bg-primary text-white px-5 py-2 rounded-lg text-sm font-bold shadow-lg shadow-primary/20">Sign In</button>
-            </div>
-          </div>
-        </header>
 
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/car-details" element={<CarDetails />} />
-        </Routes>
+            {/* Navigation Links */}
+            <div className="hidden md:flex items-center gap-6">
+              <a className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors" href="#">Become a Host</a>
+              <a className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors" href="#">Browse Cars</a>
+              <a className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors" href="#">Help</a>
+            </div>
+          </div>
 
-        <footer className="bg-white dark:bg-background-dark border-t border-[#f2f1f4] dark:border-white/10 mt-20 py-12">
-          <div className="max-w-[1200px] mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-10">
-            <div className="col-span-2">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="size-6 bg-primary rounded flex items-center justify-center text-white">
-                  <span className="material-symbols-outlined text-xs">directions_car</span>
-                </div>
-                <span className="text-lg font-bold">DriveShare</span>
-              </div>
-              <p className="text-sm text-[#726a81] max-w-sm">The world's largest peer-to-peer car sharing marketplace where you can book any car you want, wherever you want it.</p>
+          {/* Right: Actions */}
+          <div className="flex items-center gap-5">
+            <ThemeToggle />
+
+            <div className="hidden sm:flex items-center gap-5">
+              <a className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors" href="#">My Trips</a>
+              <a className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors" href="#">Messages</a>
             </div>
-            <div>
-              <h5 className="font-bold mb-4 text-sm uppercase tracking-widest">Company</h5>
-              <ul className="space-y-2 text-sm text-[#726a81]">
-                <li><a className="hover:text-primary" href="#">About Us</a></li>
-                <li><a className="hover:text-primary" href="#">Press</a></li>
-                <li><a className="hover:text-primary" href="#">Careers</a></li>
-              </ul>
+
+            {/* Avatar */}
+            <div className="size-9 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700 cursor-pointer hover:border-primary transition-colors">
+              <img
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZgqoVwWRc6NXW5CmIcWQoMQVY-pex16ch4ehkTYAXsLCUGU5i5VoXzLp2HvUFu8AdOEjLZxlwaWUTgeHfNGAe26cwfc9PYjkuDkTwXUlQqhq8yA1TpXQtL4CHFki8XhFST2xywHejEPAI8BiypMak0XeXHPaxMhbxjnla1bFQOAl_pGuoVgufqvzvFO3ZBwPJzXOf6DCemK4wpBy042mwJcpSskBqoS7SlDQ1X9cNJjB2rJP9CPH6tnpD6mpDB94OhKDeZ0jRsn8"
+                alt="User Profile"
+                className="w-full h-full object-cover"
+              />
             </div>
-            <div>
-              <h5 className="font-bold mb-4 text-sm uppercase tracking-widest">Support</h5>
-              <ul className="space-y-2 text-sm text-[#726a81]">
-                <li><a className="hover:text-primary" href="#">Help Center</a></li>
-                <li><a className="hover:text-primary" href="#">Safety</a></li>
-                <li><a className="hover:text-primary" href="#">Contact</a></li>
-              </ul>
-            </div>
+
+            <button className="bg-primary text-white px-5 py-2 rounded-lg text-sm font-bold shadow-lg shadow-primary/30 hover:shadow-primary/40 hover:scale-105 transition-all">
+              List your car
+            </button>
           </div>
-          <div className="max-w-[1200px] mx-auto px-6 pt-12 mt-12 border-t border-[#f2f1f4] dark:border-white/10 text-xs text-[#726a81] flex flex-col md:flex-row justify-between gap-4">
-            <p>© 2023 DriveShare. All rights reserved.</p>
-            <div className="flex gap-6">
-              <a className="hover:underline" href="#">Privacy Policy</a>
-              <a className="hover:underline" href="#">Terms of Service</a>
-            </div>
-          </div>
-        </footer>
+        </div>
       </div>
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/car-details" element={<CarDetails />} />
+      </Routes>
+
+      <footer className="bg-white dark:bg-background-dark border-t border-[#f2f1f4] dark:border-white/10 mt-20 py-12">
+        <div className="max-w-[1200px] mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-10">
+          <div className="col-span-2">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="size-6 bg-primary rounded flex items-center justify-center text-white">
+                <span className="material-symbols-outlined text-xs">directions_car</span>
+              </div>
+              <span className="text-lg font-bold">DriveShare</span>
+            </div>
+            <p className="text-sm text-[#726a81] max-w-sm">The world's largest peer-to-peer car sharing marketplace where you can book any car you want, wherever you want it.</p>
+          </div>
+          <div>
+            <h5 className="font-bold mb-4 text-sm uppercase tracking-widest">Company</h5>
+            <ul className="space-y-2 text-sm text-[#726a81]">
+              <li><a className="hover:text-primary" href="#">About Us</a></li>
+              <li><a className="hover:text-primary" href="#">Press</a></li>
+              <li><a className="hover:text-primary" href="#">Careers</a></li>
+            </ul>
+          </div>
+          <div>
+            <h5 className="font-bold mb-4 text-sm uppercase tracking-widest">Support</h5>
+            <ul className="space-y-2 text-sm text-[#726a81]">
+              <li><a className="hover:text-primary" href="#">Help Center</a></li>
+              <li><a className="hover:text-primary" href="#">Safety</a></li>
+              <li><a className="hover:text-primary" href="#">Contact</a></li>
+            </ul>
+          </div>
+        </div>
+        <div className="max-w-[1200px] mx-auto px-6 pt-12 mt-12 border-t border-[#f2f1f4] dark:border-white/10 text-xs text-[#726a81] flex flex-col md:flex-row justify-between gap-4">
+          <p>© 2023 DriveShare. All rights reserved.</p>
+          <div className="flex gap-6">
+            <a className="hover:underline" href="#">Privacy Policy</a>
+            <a className="hover:underline" href="#">Terms of Service</a>
+          </div>
+        </div>
+      </footer>
+    </div>
   );
 }
 
