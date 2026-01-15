@@ -22,7 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-.jar
+
 GITHUB_ACTIONS_VARIABLES.md
 .jar
 
