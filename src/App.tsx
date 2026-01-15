@@ -1,8 +1,16 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
-import CarDetails from './components/CarDetails';
 import { useTheme } from './hooks/useTheme';
+import './App.css';
 
-// Pages from main branch
+// Layout & Pages from Home_Page / main
+import Layout from './components/Layout';
+import Home from './pages/Home';
+import AllCars from './pages/AllCars';
+
+// DriveShare pages
+import CarDetails from './components/CarDetails';
+
+// Main branch pages
 import AuthPage from './AuthPage';
 import HomePage from './HomePage';
 import OwnerDashboard from './OwnerDashboard';
@@ -13,18 +21,19 @@ import AddCarPricing from './AddCarPricing';
 import OwnerBookings from './OwnerBookings';
 import AgencyProfile from './AgencyProfile';
 
-// Optional: Home for DriveShare-style homepage
-const Home = () => {
-  return (
-    <div className="max-w-[1200px] mx-auto px-6 py-8">
-      <h1 className="text-4xl font-bold">Welcome to DriveShare!</h1>
-      <p className="mt-4">This is the homepage. You can navigate to the car details page.</p>
-      <Link to="/car-details" className="mt-6 inline-block bg-primary text-white px-6 py-3 rounded-lg font-bold hover:bg-primary/90 transition-colors">
-        View Car Details
-      </Link>
-    </div>
-  );
-};
+// Optional: DriveShare-style homepage
+const DriveHome = () => (
+  <div className="max-w-[1200px] mx-auto px-6 py-8">
+    <h1 className="text-4xl font-bold">Welcome to DriveShare!</h1>
+    <p className="mt-4">This is the homepage. You can navigate to the car details page.</p>
+    <Link
+      to="/car-details"
+      className="mt-6 inline-block bg-primary text-white px-6 py-3 rounded-lg font-bold hover:bg-primary/90 transition-colors"
+    >
+      View Car Details
+    </Link>
+  </div>
+);
 
 const ThemeToggle = () => {
   const { isDark, toggleTheme } = useTheme();
@@ -51,32 +60,42 @@ const ThemeToggle = () => {
 function App() {
   return (
     <div className="bg-background-light dark:bg-background-dark text-[#141216] dark:text-white min-h-screen">
-      {/* Top Navigation - Floating Pill */}
+      {/* Top Navigation */}
       <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 w-[95%] max-w-[1200px] rounded-full bg-white/80 dark:bg-[#1C1C1E]/80 backdrop-blur-xl shadow-lg border border-white/20 dark:border-white/5 transition-all duration-300">
         <div className="px-6 h-16 flex items-center justify-between">
-          {/* Left Side: Logo + Navigation */}
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-3">
               <div className="size-9 bg-primary rounded-lg flex items-center justify-center text-white shadow-lg shadow-primary/30">
                 <span className="material-symbols-outlined text-lg">directions_car</span>
               </div>
-              <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">DriveShare</span>
+              <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                DriveShare
+              </span>
             </div>
 
             <div className="hidden md:flex items-center gap-6">
-              <a className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors" href="#">Become a Host</a>
-              <a className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors" href="#">Browse Cars</a>
-              <a className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors" href="#">Help</a>
+              <a className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors" href="#">
+                Become a Host
+              </a>
+              <a className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors" href="#">
+                Browse Cars
+              </a>
+              <a className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors" href="#">
+                Help
+              </a>
             </div>
           </div>
 
-          {/* Right: Actions */}
           <div className="flex items-center gap-5">
             <ThemeToggle />
 
             <div className="hidden sm:flex items-center gap-5">
-              <a className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors" href="#">My Trips</a>
-              <a className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors" href="#">Messages</a>
+              <a className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors" href="#">
+                My Trips
+              </a>
+              <a className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors" href="#">
+                Messages
+              </a>
             </div>
 
             <div className="size-9 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700 cursor-pointer hover:border-primary transition-colors">
@@ -94,15 +113,19 @@ function App() {
         </div>
       </div>
 
-      {/* Routing */}
       <BrowserRouter>
         <Routes>
-          {/* DriveShare-style Home & CarDetails */}
-          <Route path="/drive-home" element={<Home />} />
+          {/* DriveShare pages */}
+          <Route path="/drive-home" element={<DriveHome />} />
           <Route path="/car-details" element={<CarDetails />} />
 
+          {/* Home_Page / AutoShare routes */}
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="cars" element={<AllCars />} />
+          </Route>
+
           {/* Main branch routes */}
-          <Route path="/" element={<HomePage />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/owner-dashboard" element={<OwnerDashboard />} />
           <Route path="/owner/cars" element={<MyCars />} />
@@ -124,7 +147,9 @@ function App() {
               </div>
               <span className="text-lg font-bold">DriveShare</span>
             </div>
-            <p className="text-sm text-[#726a81] max-w-sm">The world's largest peer-to-peer car sharing marketplace where you can book any car you want, wherever you want it.</p>
+            <p className="text-sm text-[#726a81] max-w-sm">
+              The world's largest peer-to-peer car sharing marketplace where you can book any car you want, wherever you want it.
+            </p>
           </div>
           <div>
             <h5 className="font-bold mb-4 text-sm uppercase tracking-widest">Company</h5>

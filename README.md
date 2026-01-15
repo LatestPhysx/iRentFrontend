@@ -4,7 +4,7 @@ This project includes:
 
 DriveShare-style Car Details page (from Sabir/Car_Detail branch).
 
-AutoShare-style Login / Register flow (from main branch).
+AutoShare-style Login / Register flow (from Alaa/Home_Page and main branch).
 
 It’s built with React + Vite + Tailwind CSS v4 and uses react-router-dom for routing.
 
@@ -46,7 +46,7 @@ Landing/HomePage: /
 
 File: HomePage.tsx
 
-Simple landing screen with a button linking to auth.
+Simple branded landing screen with a button linking to auth.
 
 AuthPage (Login / Register): /auth
 
@@ -56,7 +56,7 @@ Includes:
 
 Sign In
 
-Create account – Account Type (Regular / Rental Company)
+Create account – Account Type (Regular User / Rental Company)
 
 Register – Basic Info
 
@@ -108,7 +108,7 @@ Noto Sans (body text)
 
 Inter / Montserrat (additional headings and text)
 
-Material Symbols Outlined for iconography.
+Material Symbols Outlined for icons.
 
 5. Editing UI / Components
 
@@ -127,3 +127,5 @@ DriveShare pages use /drive-home and /car-details to avoid conflict with main / 
 Theme toggle and navbar/footer are applied globally.
 
 All routes work in a single <BrowserRouter> wrapper.
+
+Auth flow and Car Details can coexist and be accessed independently.
