@@ -81,26 +81,29 @@ function App() {
           <div>
             <h5 className="font-bold mb-4 text-sm uppercase tracking-widest">Company</h5>
             <ul className="space-y-2 text-sm text-[#726a81]">
-              <li><a className="hover:text-primary" href="#">About Us</a></li>
-              <li><a className="hover:text-primary" href="#">Press</a></li>
-              <li><a className="hover:text-primary" href="#">Careers</a></li>
+              <li><Link className="hover:text-primary" to="/">About Us</Link></li>
+              <li><Link className="hover:text-primary" to="/">Press</Link></li>
+              <li><Link className="hover:text-primary" to="/owner-dashboard">Owner Portal</Link></li>
             </ul>
+
           </div>
           <div>
             <h5 className="font-bold mb-4 text-sm uppercase tracking-widest">Support</h5>
             <ul className="space-y-2 text-sm text-[#726a81]">
-              <li><a className="hover:text-primary" href="#">Help Center</a></li>
-              <li><a className="hover:text-primary" href="#">Safety</a></li>
-              <li><a className="hover:text-primary" href="#">Contact</a></li>
+              <li><Link className="hover:text-primary" to="/owner/agency-profile">Help Center</Link></li>
+              <li><Link className="hover:text-primary" to="/">Safety</Link></li>
+              <li><Link className="hover:text-primary" to="/owner/agency-profile">Contact</Link></li>
             </ul>
+
           </div>
         </div>
         <div className="max-w-[1200px] mx-auto px-6 pt-12 mt-12 border-t border-[#f2f1f4] dark:border-white/10 text-xs text-[#726a81] flex flex-col md:flex-row justify-between gap-4">
           <p>© 2025 DriveShare. All rights reserved.</p>
           <div className="flex gap-6">
-            <a className="hover:underline" href="#">Privacy Policy</a>
-            <a className="hover:underline" href="#">Terms of Service</a>
+            <Link className="hover:underline" to="/">Privacy Policy</Link>
+            <Link className="hover:underline" to="/">Terms of Service</Link>
           </div>
+
         </div>
       </footer>
     </div>

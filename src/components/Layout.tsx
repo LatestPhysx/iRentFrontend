@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Link, Outlet, useLocation } from 'react-router-dom'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
+
 
 type Theme = 'light' | 'dark'
 const getInitialTheme = (): Theme => 'light'
@@ -10,6 +11,8 @@ export default function Layout() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const location = useLocation()
+    const navigate = useNavigate()
+
 
     // Theme Logic
     useEffect(() => {
@@ -44,9 +47,9 @@ export default function Layout() {
                             <Link className="hover:text-primary transition-colors" to="/cars">
                                 Browse Cars
                             </Link>
-                            <a className="hover:text-primary transition-colors" href="#">
+                            <Link className="hover:text-primary transition-colors" to="/owner/agency-profile">
                                 Help
-                            </a>
+                            </Link>
                         </div>
 
                         {!isLoggedIn ? (
@@ -63,13 +66,14 @@ export default function Layout() {
                                 <button
                                     type="button"
                                     className="text-sm font-medium hover:text-primary transition-colors"
-                                    onClick={() => setIsLoggedIn(true)}
+                                    onClick={() => navigate('/auth')}
                                 >
                                     Sign In
                                 </button>
                                 <button
                                     type="button"
                                     className="bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all"
+                                    onClick={() => navigate('/auth')}
                                 >
                                     Get Started
                                 </button>
@@ -85,8 +89,8 @@ export default function Layout() {
                                     <span className="material-symbols-outlined dark-mode-icon">dark_mode</span>
                                     <span className="material-symbols-outlined light-mode-icon">light_mode</span>
                                 </button>
-                                <a href="#" className="text-sm font-medium hover:text-primary transition-colors">My Trips</a>
-                                <a href="#" className="text-sm font-medium hover:text-primary transition-colors">Messages</a>
+                                <Link to="/owner/bookings" className="text-sm font-medium hover:text-primary transition-colors">My Trips</Link>
+                                <Link to="/owner/bookings" className="text-sm font-medium hover:text-primary transition-colors">Messages</Link>
                                 <div className="relative">
                                     <div
                                         className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden cursor-pointer ring-2 ring-transparent hover:ring-primary transition-all"
@@ -97,8 +101,8 @@ export default function Layout() {
                                     </div>
                                     {isDropdownOpen && (
                                         <div className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-100 dark:border-slate-800 overflow-hidden py-1 z-50">
-                                            <a href="#" className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800">Profile</a>
-                                            <a href="#" className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800">Settings</a>
+                                            <Link to="/owner/agency-profile" className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800">Profile</Link>
+                                            <Link to="/owner/agency-profile" className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800">Settings</Link>
                                             <div className="h-px bg-slate-100 dark:bg-slate-800 my-1"></div>
                                             <button
                                                 onClick={() => {
@@ -115,6 +119,7 @@ export default function Layout() {
                                 <button
                                     type="button"
                                     className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold shadow hover:bg-primary/90 transition-all hidden lg:block"
+                                    onClick={() => navigate('/owner/cars/new')}
                                 >
                                     List your car
                                 </button>
@@ -161,10 +166,10 @@ export default function Layout() {
                                 Company
                             </h5>
                             <ul className="space-y-4">
-                                <li><a className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" href="#">About</a></li>
-                                <li><a className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" href="#">Careers</a></li>
-                                <li><a className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" href="#">Press</a></li>
-                                <li><a className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" href="#">Team</a></li>
+                                <li><Link className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" to="/">About</Link></li>
+                                <li><Link className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" to="/">Careers</Link></li>
+                                <li><Link className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" to="/">Press</Link></li>
+                                <li><Link className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" to="/">Team</Link></li>
                             </ul>
                         </div>
 
@@ -174,9 +179,9 @@ export default function Layout() {
                             </h5>
                             <ul className="space-y-4">
                                 <li><Link className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" to="/cars">Search</Link></li>
-                                <li><a className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" href="#">How it works</a></li>
-                                <li><a className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" href="#">Rental Policies</a></li>
-                                <li><a className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" href="#">Destinations</a></li>
+                                <li><Link className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" to="/">How it works</Link></li>
+                                <li><Link className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" to="/">Rental Policies</Link></li>
+                                <li><Link className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" to="/">Destinations</Link></li>
                             </ul>
                         </div>
 
@@ -185,9 +190,9 @@ export default function Layout() {
                                 Host
                             </h5>
                             <ul className="space-y-4">
-                                <li><a className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" href="#">List your car</a></li>
-                                <li><a className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" href="#">Hosting tips</a></li>
-                                <li><a className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" href="#">Insurance &amp; protection</a></li>
+                                <li><Link className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" to="/owner/cars/new">List your car</Link></li>
+                                <li><Link className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" to="/owner-dashboard">Hosting tips</Link></li>
+                                <li><Link className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" to="/owner/agency-profile">Insurance &amp; protection</Link></li>
                             </ul>
                         </div>
 
@@ -196,9 +201,9 @@ export default function Layout() {
                                 Support
                             </h5>
                             <ul className="space-y-4">
-                                <li><a className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" href="#">Help Center</a></li>
-                                <li><a className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" href="#">Trust &amp; Safety</a></li>
-                                <li><a className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" href="#">Contact Support</a></li>
+                                <li><Link className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" to="/owner/agency-profile">Help Center</Link></li>
+                                <li><Link className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" to="/">Trust &amp; Safety</Link></li>
+                                <li><Link className="text-sm text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" to="/owner/agency-profile">Contact Support</Link></li>
                             </ul>
                         </div>
                     </div>
@@ -208,10 +213,11 @@ export default function Layout() {
                             © 2024 iRent Marketplace. All rights reserved.
                         </p>
                         <div className="flex items-center gap-6">
-                            <a className="text-slate-400 hover:text-primary transition-colors" href="#"><span className="material-symbols-outlined text-lg">language</span></a>
-                            <a className="text-slate-400 hover:text-primary transition-colors" href="#"><span className="material-symbols-outlined text-lg">public</span></a>
-                            <a className="text-slate-400 hover:text-primary transition-colors" href="#"><span className="material-symbols-outlined text-lg">share</span></a>
+                            <Link className="text-slate-400 hover:text-primary transition-colors" to="/"><span className="material-symbols-outlined text-lg">language</span></Link>
+                            <Link className="text-slate-400 hover:text-primary transition-colors" to="/"><span className="material-symbols-outlined text-lg">public</span></Link>
+                            <Link className="text-slate-400 hover:text-primary transition-colors" to="/"><span className="material-symbols-outlined text-lg">share</span></Link>
                         </div>
+
                     </div>
                 </div>
             </footer>
@@ -230,7 +236,8 @@ export default function Layout() {
                     <div className="flex flex-col gap-6 text-xl font-medium text-slate-800 dark:text-slate-100">
                         <Link to="/cars" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-primary">Become a Host</Link>
                         <Link to="/cars" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-primary">Browse Cars</Link>
-                        <a href="#" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-primary">Help</a>
+                        <Link to="/owner/agency-profile" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-primary">Help</Link>
+
                         <hr className="border-slate-200 dark:border-slate-800" />
 
                         <button
@@ -259,7 +266,10 @@ export default function Layout() {
                                 <button
                                     type="button"
                                     className="w-full py-3 rounded-xl bg-primary text-white font-bold shadow-lg shadow-primary/20"
-                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    onClick={() => {
+                                        navigate('/auth')
+                                        setIsMobileMenuOpen(false)
+                                    }}
                                 >
                                     Get Started
                                 </button>
@@ -275,8 +285,8 @@ export default function Layout() {
                                         <span className="text-xs text-slate-500">View Profile</span>
                                     </div>
                                 </div>
-                                <a href="#" className="flex items-center gap-3 hover:text-primary"><span className="material-symbols-outlined">commute</span> My Trips</a>
-                                <a href="#" className="flex items-center gap-3 hover:text-primary"><span className="material-symbols-outlined">chat</span> Messages</a>
+                                <Link to="/owner/bookings" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 hover:text-primary"><span className="material-symbols-outlined">commute</span> My Trips</Link>
+                                <Link to="/owner/bookings" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 hover:text-primary"><span className="material-symbols-outlined">chat</span> Messages</Link>
                                 <button
                                     onClick={() => {
                                         setIsLoggedIn(false)
@@ -290,6 +300,10 @@ export default function Layout() {
                                 <button
                                     type="button"
                                     className="w-full mt-4 py-3 rounded-xl bg-primary text-white font-bold shadow-lg"
+                                    onClick={() => {
+                                        navigate('/owner/cars/new')
+                                        setIsMobileMenuOpen(false)
+                                    }}
                                 >
                                     List your car
                                 </button>

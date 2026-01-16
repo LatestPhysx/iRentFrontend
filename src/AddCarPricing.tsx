@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, Link } from 'react-router-dom'
+
+import { useCars } from './context/CarContext'
+import type { Car } from './context/CarContext'
+
 
 const AddCarPricing = () => {
     const navigate = useNavigate()
     const location = useLocation()
+    const { addCar } = useCars()
     const previousData = location.state || {}
 
     // State for form fields
@@ -32,17 +37,28 @@ const AddCarPricing = () => {
     }
 
     const handlePublish = () => {
-        const finalCarData = {
-            ...previousData,
-            pricePerDay: parseFloat(pricePerDay) || 0,
-            minDuration,
-            pickupLocation,
-            // Mocking availability for now as full calendar logic is complex
-            availability: 'all_available'
+        const price = parseFloat(pricePerDay) || 0
+
+        const newCar: Omit<Car, 'id'> = {
+            name: `${previousData.brand} ${previousData.model}`,
+            brand: previousData.brand || 'Unknown',
+            model: previousData.model || 'Unknown',
+            price: price,
+            type: previousData.bodyStyle as any || 'Economy',
+            rating: 5.0,
+            image: "https://images.unsplash.com/photo-1555529771-835f59fc5efe?auto=format&fit=crop&q=80&w=800",
+            tags: [previousData.transmission || 'Automatic', previousData.fuelType || 'Electric'],
+            available: true,
+            transmission: previousData.transmission || 'Automatic',
+            fuel: previousData.fuelType || 'Electric',
+            trips: 0,
+            status: 'Available'
         }
 
-        console.log('FINAL CAR SUBMISSION PAYLOAD:', finalCarData)
-        alert('Car Published! Check console for payload.\n\nRedirecting to Dashboard...')
+        addCar(newCar)
+
+        console.log('FINAL CAR SUBMISSION PAYLOAD:', newCar)
+        alert('Car Published Successfully!')
         navigate('/owner/cars')
     }
 
@@ -72,9 +88,15 @@ const AddCarPricing = () => {
             }
 
             days.push(
-                <button key={`day-${i}`} className={className} type="button">
+                <button
+                    key={`day-${i}`}
+                    className={className}
+                    type="button"
+                    onClick={() => alert(`Date ${i} selected for management.`)}
+                >
                     {content}
                 </button>
+
             )
         }
         return days
@@ -94,33 +116,34 @@ const AddCarPricing = () => {
                         </div>
                     </div>
                     <nav className="flex flex-col gap-2 grow">
-                        <a className="flex items-center gap-3 px-3 py-2.5 text-[#726487] hover:text-driveflow-primary transition-colors" href="/owner-dashboard">
+                        <Link className="flex items-center gap-3 px-3 py-2.5 text-[#726487] hover:text-driveflow-primary transition-colors" to="/owner-dashboard">
                             <span className="material-symbols-outlined">dashboard</span>
                             <span className="text-sm font-medium">Dashboard</span>
-                        </a>
-                        <a className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-driveflow-primary/10 text-driveflow-primary" href="/owner/cars">
+                        </Link>
+                        <Link className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-driveflow-primary/10 text-driveflow-primary" to="/owner/cars">
                             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>list_alt</span>
                             <span className="text-sm font-medium">Listings</span>
-                        </a>
-                        <a className="flex items-center gap-3 px-3 py-2.5 text-[#726487] hover:text-driveflow-primary transition-colors" href="#">
+                        </Link>
+                        <Link className="flex items-center gap-3 px-3 py-2.5 text-[#726487] hover:text-driveflow-primary transition-colors" to="/owner/bookings">
                             <span className="material-symbols-outlined">calendar_today</span>
                             <span className="text-sm font-medium">Bookings</span>
-                        </a>
-                        <a className="flex items-center gap-3 px-3 py-2.5 text-[#726487] hover:text-driveflow-primary transition-colors" href="#">
+                        </Link>
+                        <Link className="flex items-center gap-3 px-3 py-2.5 text-[#726487] hover:text-driveflow-primary transition-colors" to="/owner/agency-profile">
                             <span className="material-symbols-outlined">chat_bubble</span>
                             <span className="text-sm font-medium">Messages</span>
-                        </a>
-                        <a className="flex items-center gap-3 px-3 py-2.5 text-[#726487] hover:text-driveflow-primary transition-colors" href="#">
+                        </Link>
+                        <Link className="flex items-center gap-3 px-3 py-2.5 text-[#726487] hover:text-driveflow-primary transition-colors" to="/owner-dashboard">
                             <span className="material-symbols-outlined">analytics</span>
                             <span className="text-sm font-medium">Reports</span>
-                        </a>
+                        </Link>
                         <div className="mt-8 pt-8 border-t border-[#f2f0f4] dark:border-gray-800">
-                            <a className="flex items-center gap-3 px-3 py-2.5 text-[#726487] hover:text-driveflow-primary transition-colors" href="#">
+                            <Link className="flex items-center gap-3 px-3 py-2.5 text-[#726487] hover:text-driveflow-primary transition-colors" to="/owner/agency-profile">
                                 <span className="material-symbols-outlined">settings</span>
                                 <span className="text-sm font-medium">Settings</span>
-                            </a>
+                            </Link>
                         </div>
                     </nav>
+
                     <div className="mt-auto">
                         <div className="p-4 bg-driveflow-primary/5 rounded-xl border border-driveflow-primary/10">
                             <p className="text-xs text-[#726487] mb-2 uppercase tracking-wider font-bold">Pro Plan</p>

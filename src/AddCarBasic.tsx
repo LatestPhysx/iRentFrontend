@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, Link } from 'react-router-dom'
+
 
 const AddCarBasic = () => {
     const navigate = useNavigate()
@@ -70,33 +71,34 @@ const AddCarBasic = () => {
                         </div>
                     </div>
                     <nav className="flex flex-col gap-2 grow">
-                        <a className="flex items-center gap-3 px-3 py-2.5 text-[#726487] hover:text-driveflow-primary transition-colors" href="/owner-dashboard">
+                        <Link className="flex items-center gap-3 px-3 py-2.5 text-[#726487] hover:text-driveflow-primary transition-colors" to="/owner-dashboard">
                             <span className="material-symbols-outlined">dashboard</span>
                             <span className="text-sm font-medium">Dashboard</span>
-                        </a>
-                        <a className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-driveflow-primary/10 text-driveflow-primary" href="/owner/cars">
+                        </Link>
+                        <Link className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-driveflow-primary/10 text-driveflow-primary" to="/owner/cars">
                             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>list_alt</span>
                             <span className="text-sm font-medium">Listings</span>
-                        </a>
-                        <a className="flex items-center gap-3 px-3 py-2.5 text-[#726487] hover:text-driveflow-primary transition-colors" href="#">
+                        </Link>
+                        <Link className="flex items-center gap-3 px-3 py-2.5 text-[#726487] hover:text-driveflow-primary transition-colors" to="/owner/bookings">
                             <span className="material-symbols-outlined">calendar_today</span>
                             <span className="text-sm font-medium">Bookings</span>
-                        </a>
-                        <a className="flex items-center gap-3 px-3 py-2.5 text-[#726487] hover:text-driveflow-primary transition-colors" href="#">
+                        </Link>
+                        <Link className="flex items-center gap-3 px-3 py-2.5 text-[#726487] hover:text-driveflow-primary transition-colors" to="/owner/agency-profile">
                             <span className="material-symbols-outlined">chat_bubble</span>
                             <span className="text-sm font-medium">Messages</span>
-                        </a>
-                        <a className="flex items-center gap-3 px-3 py-2.5 text-[#726487] hover:text-driveflow-primary transition-colors" href="#">
+                        </Link>
+                        <Link className="flex items-center gap-3 px-3 py-2.5 text-[#726487] hover:text-driveflow-primary transition-colors" to="/owner-dashboard">
                             <span className="material-symbols-outlined">analytics</span>
                             <span className="text-sm font-medium">Reports</span>
-                        </a>
+                        </Link>
                         <div className="mt-8 pt-8 border-t border-[#f2f0f4] dark:border-gray-800">
-                            <a className="flex items-center gap-3 px-3 py-2.5 text-[#726487] hover:text-driveflow-primary transition-colors" href="#">
+                            <Link className="flex items-center gap-3 px-3 py-2.5 text-[#726487] hover:text-driveflow-primary transition-colors" to="/owner/agency-profile">
                                 <span className="material-symbols-outlined">settings</span>
                                 <span className="text-sm font-medium">Settings</span>
-                            </a>
+                            </Link>
                         </div>
                     </nav>
+
                     <div className="mt-auto">
                         <div className="p-4 bg-driveflow-primary/5 rounded-xl border border-driveflow-primary/10">
                             <p className="text-xs text-[#726487] mb-2 uppercase tracking-wider font-bold">Pro Plan</p>

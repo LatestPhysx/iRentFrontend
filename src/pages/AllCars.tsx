@@ -1,18 +1,37 @@
 import { useState, useMemo, useEffect } from 'react'
-import { CARS } from '../data/cars'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useCars } from '../context/CarContext'
+import type { Car } from '../context/CarContext'
+
+
+
 
 export default function AllCars() {
-    const [selectedType, setSelectedType] = useState<string>('All')
+    const { cars } = useCars()
+    const location = useLocation()
+    const navigate = useNavigate()
+    const state = location.state as { category?: string; pickupLocation?: string } || {}
+
+    const [selectedType, setSelectedType] = useState<string>(state.category || 'All')
     const [priceRange, setPriceRange] = useState<string>('All')
     const [availability, setAvailability] = useState<string>('All')
+
+    // Handle incoming state changes (e.g. from Layout or Home)
+    useEffect(() => {
+        if (state.category) {
+            setSelectedType(state.category)
+        }
+    }, [state.category])
 
     // Dynamic Page Title
     useEffect(() => {
         document.title = 'iRent | All Cars'
     }, [])
 
+
     const filteredCars = useMemo(() => {
-        return CARS.filter((car) => {
+        return cars.filter((car: Car) => {
+
             // Type Filter
             if (selectedType !== 'All' && car.type !== selectedType) return false
 
@@ -126,7 +145,8 @@ export default function AllCars() {
                 {/* Car Grid */}
                 {filteredCars.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                        {filteredCars.map((car) => (
+                        {filteredCars.map((car: Car) => (
+
                             <div key={car.id} className={`group flex flex-col bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden transition-all duration-300 ${car.available ? 'hover:shadow-xl hover:-translate-y-1' : 'opacity-80'}`}>
                                 <div className="relative aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-slate-800">
                                     {/* Status Badge */}
@@ -165,7 +185,8 @@ export default function AllCars() {
                                     </div>
                                     <p className="text-2xl font-bold text-primary mb-3">{car.price} DH <span className="text-sm font-normal text-slate-500 dark:text-slate-400">/ day</span></p>
                                     <div className="flex flex-wrap gap-2 mb-6">
-                                        {car.tags.map((tag) => (
+                                        {car.tags.map((tag: string) => (
+
                                             <span key={tag} className="text-[10px] font-bold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded uppercase tracking-wider">
                                                 {tag}
                                             </span>
@@ -174,6 +195,7 @@ export default function AllCars() {
                                     <div className="mt-auto">
                                         <button
                                             disabled={!car.available}
+                                            onClick={() => navigate('/car-details', { state: { carId: car.id } })}
                                             className={`w-full font-bold py-3 rounded-lg transition-all flex items-center justify-center gap-2 ${car.available
                                                 ? 'bg-primary text-white hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/20'
                                                 : 'bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-500 cursor-not-allowed'
@@ -181,6 +203,7 @@ export default function AllCars() {
                                         >
                                             {car.available ? 'View Details' : 'Unavailable'}
                                         </button>
+
                                     </div>
                                 </div>
                             </div>

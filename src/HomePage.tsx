@@ -66,11 +66,12 @@ const HomePage = () => {
             Home
           </Link>
           <Link
-            to="/"
+            to="/cars"
             className="text-sm font-semibold text-[#141216] dark:text-[#e0dde3] hover:text-primary transition-colors"
           >
             Browse
           </Link>
+
           <Link
             to="/"
             className="text-sm font-semibold text-[#141216] dark:text-[#e0dde3] hover:text-primary transition-colors"

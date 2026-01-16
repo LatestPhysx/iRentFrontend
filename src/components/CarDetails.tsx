@@ -1,19 +1,33 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useCars } from '../context/CarContext';
 
 const CarDetails = () => {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const { cars } = useCars();
+    const carId = location.state?.carId;
+
+    const car = useMemo(() => {
+        return cars.find(c => c.id === carId) || cars[0]; // Fallback to first car if id missing
+    }, [cars, carId]);
+
     const [selectedDates, setSelectedDates] = useState<{ start: number | null, end: number | null }>({ start: null, end: null });
     const [isGalleryOpen, setIsGalleryOpen] = useState(false);
 
+
     // Mock images
-    const mainImage = "https://images.unsplash.com/photo-1560958089-b8a1929cea89?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80";
+    // Mock images
+    const mainImage = car.image;
     const galleryImages = [
+        car.image,
         "https://images.unsplash.com/photo-1617788138017-80ad40651399?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1571127236794-81c0bbfe1ce3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1550355291-bbee04a92027?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1560958089-b8a1929cea89?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1627915330833-8a303a7431c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
     ];
+
 
     const handleDateClick = (day: number) => {
         if (!selectedDates.start || (selectedDates.start && selectedDates.end)) {
@@ -62,12 +76,13 @@ const CarDetails = () => {
 
             {/* Breadcrumbs */}
             <nav className="flex items-center gap-2 mb-6 text-sm">
-                <a className="text-[#726a81] hover:text-primary" href="#">Marketplace</a>
+                <Link className="text-[#726a81] hover:text-primary" to="/cars">Marketplace</Link>
                 <span className="text-[#726a81] material-symbols-outlined text-xs">chevron_right</span>
-                <a className="text-[#726a81] hover:text-primary" href="#">Electric</a>
+                <Link className="text-[#726a81] hover:text-primary" to="/cars" state={{ category: car.type }}>{car.type}</Link>
                 <span className="text-[#726a81] material-symbols-outlined text-xs">chevron_right</span>
-                <span className="font-semibold">Tesla Model Y</span>
+                <span className="font-semibold">{car.name}</span>
             </nav>
+
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                 {/* Left Column: Gallery and Content */}
@@ -79,27 +94,29 @@ const CarDetails = () => {
                         </div>
                         <img
                             src={mainImage}
-                            alt="Tesla Model Y"
+                            alt={car.name}
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
+
                     </div>
 
                     {/* Headline */}
                     <div className="mb-6">
-                        <h1 className="text-4xl font-bold tracking-tight mb-2">Tesla Model Y, 2023</h1>
+                        <h1 className="text-4xl font-bold tracking-tight mb-2">{car.name}</h1>
                         <div className="flex items-center gap-4 text-sm">
                             <div className="flex items-center gap-1">
                                 <span className="material-symbols-outlined text-yellow-500 text-sm">star</span>
-                                <span className="font-bold">4.92</span>
+                                <span className="font-bold">{car.rating.toFixed(1)}</span>
                                 <span className="text-[#726a81] underline">(124 reviews)</span>
                             </div>
                             <span className="text-[#726a81]">•</span>
                             <div className="flex items-center gap-1 text-[#726a81]">
                                 <span className="material-symbols-outlined text-sm">location_on</span>
-                                <span>San Francisco, CA</span>
+                                <span>Casablanca, MA</span>
                             </div>
                         </div>
                     </div>
+
 
                     {/* Specs Row */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -137,10 +154,11 @@ const CarDetails = () => {
                     <div className="mb-10">
                         <h3 className="text-xl font-bold mb-3">About this vehicle</h3>
                         <p className="text-[#141216] dark:text-gray-300 leading-relaxed max-w-2xl">
-                            Experience the future of driving with this 2023 long-range electric SUV.
+                            Experience the future of driving with this {car.name}.
                             Perfect for family road trips or stylish city commuting. Clean, quiet,
-                            and fully loaded with autopilot features. The interior features vegan leather
-                            and a premium sound system.
+                            and fully loaded features. The interior features premium materials
+                            and a curated sound system.
+
                         </p>
                     </div>
 
@@ -222,14 +240,20 @@ const CarDetails = () => {
                     <div className="border-t border-[#f2f1f4] dark:border-white/10 pt-8 flex items-center justify-between">
                         <div className="flex items-center gap-4">
                             <div className="size-14 rounded-full bg-accent/20 flex items-center justify-center overflow-hidden">
-                                <img alt="Profile" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZgqoVwWRc6NXW5CmIcWQoMQVY-pex16ch4ehkTYAXsLCUGU5i5VoXzLp2HvUFu8AdOEjLZxlwaWUTgeHfNGAe26cwfc9PYjkuDkTwXUlQqhq8yA1TpXQtL4CHFki8XhFST2xywHejEPAI8BiypMak0XeXHPaxMhbxjnla1bFQOAl_pGuoVgufqvzvFO3ZBwPJzXOf6DCemK4wpBy042mwJcpSskBqoS7SlDQ1X9cNJjB2rJP9CPH6tnpD6mpDB94OhKDeZ0jRsn8" />
+                                <img alt="Profile" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZgqoVwWRc6NXW5CmIcWQoMQVY-pex16ch4ehkTYAXsLCUGU5i5VoXzLp2HvFv8AdOEjLZxlwaWUTgeHfNGAe26cwfc9PYjkuDkTwXUlQqhq8yA1TpXQtL4CHFki8XhFST2xywHejEPAI8BiypMak0XeXHPaxMhbxjnla1bFQOAl_pGuoVgufqvzvFO3ZBwPJzXOf6DCemK4wpBy042mwJcpSskBqoS7SlDQ1X9cNJjB2rJP9CPH6tnpD6mpDB94OhKDeZ0jRsn8" />
                             </div>
                             <div>
                                 <p className="text-sm font-bold">Hosted by Alexander K.</p>
                                 <p className="text-xs text-[#726a81]">Joined in 2025 • Response time: 1 hour</p>
                             </div>
                         </div>
-                        <button className="text-primary font-bold text-sm border border-primary/20 px-4 py-2 rounded-lg hover:bg-primary/5">Contact Host</button>
+                        <button
+                            onClick={() => alert('Host contacted! They will get back to you soon.')}
+                            className="text-primary font-bold text-sm border border-primary/20 px-4 py-2 rounded-lg hover:bg-primary/5"
+                        >
+                            Contact Host
+                        </button>
+
                     </div>
                 </div>
 
@@ -238,9 +262,10 @@ const CarDetails = () => {
                     <div className="sticky top-24">
                         <div className="bg-white dark:bg-background-dark border-2 border-primary/10 rounded-2xl p-6 shadow-xl shadow-primary/5">
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-3xl font-bold tracking-tight">890 DH</span>
+                                <span className="text-3xl font-bold tracking-tight">{car.price} DH</span>
                                 <span className="text-[#726a81] font-medium">/ day</span>
                             </div>
+
                             <div className="space-y-4 mb-6">
                                 <div className="grid grid-cols-2 gap-0 border border-[#f2f1f4] dark:border-white/10 rounded-xl overflow-hidden">
                                     <div className="p-3 border-r border-[#f2f1f4] dark:border-white/10 hover:bg-background-light dark:hover:bg-white/5 cursor-pointer">
@@ -267,10 +292,10 @@ const CarDetails = () => {
                             <div className="space-y-3 mb-8 border-t border-[#f2f1f4] dark:border-white/10 pt-6">
                                 <div className="flex justify-between text-sm">
                                     <span className="text-[#726a81]">
-                                        890 DH x {(selectedDates.start && selectedDates.end) ? (selectedDates.end - selectedDates.start) : 0} days
+                                        {car.price} DH x {(selectedDates.start && selectedDates.end) ? (selectedDates.end - selectedDates.start) : 0} days
                                     </span>
                                     <span className="font-medium">
-                                        {(selectedDates.start && selectedDates.end) ? (890 * (selectedDates.end - selectedDates.start)) : 0} DH
+                                        {(selectedDates.start && selectedDates.end) ? (car.price * (selectedDates.end - selectedDates.start)) : 0} DH
                                     </span>
                                 </div>
                                 <div className="flex justify-between text-sm">
@@ -284,14 +309,22 @@ const CarDetails = () => {
                                 <div className="flex justify-between items-center pt-3 border-t border-dashed border-[#f2f1f4] dark:border-white/10">
                                     <span className="font-bold text-lg">Total</span>
                                     <span className="font-bold text-lg">
-                                        {Math.max(0, ((selectedDates.start && selectedDates.end) ? (890 * (selectedDates.end - selectedDates.start)) : 0) + 150 - 250)} DH
+                                        {Math.max(0, ((selectedDates.start && selectedDates.end) ? (car.price * (selectedDates.end - selectedDates.start)) : 0) + 150 - 250)} DH
                                     </span>
                                 </div>
+
                             </div>
-                            <button className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/30 transition-all flex items-center justify-center gap-2 mb-4">
+                            <button
+                                onClick={() => {
+                                    alert('Booking successful!');
+                                    navigate('/owner/bookings');
+                                }}
+                                className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/30 transition-all flex items-center justify-center gap-2 mb-4"
+                            >
                                 Book Now
                                 <span className="material-symbols-outlined text-sm">bolt</span>
                             </button>
+
                             <p className="text-center text-xs text-[#726a81]">You won't be charged yet</p>
                         </div>
                         <div className="mt-6 p-4 bg-accent/10 rounded-xl flex items-start gap-3 border border-accent/20">

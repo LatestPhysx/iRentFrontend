@@ -1,7 +1,25 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useCars } from './context/CarContext'
+
 
 const OwnerDashboard = () => {
+    const { cars, bookings } = useCars()
+    const navigate = useNavigate()
+
+    const stats = useMemo(() => ({
+        totalCars: cars.length,
+        activeBookings: bookings.filter(b => b.status === 'Confirmed').length,
+        pendingRequests: bookings.filter(b => b.status === 'Pending').length,
+        earnings: bookings.filter(b => b.status === 'Confirmed').reduce((acc, b) => acc + (b.totalPrice || 0), 0)
+    }), [cars, bookings])
+
+    const recentActivity = useMemo(() => {
+        return [...bookings].sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()).slice(0, 4)
+    }, [bookings])
+
     // Check local storage to ensure dark mode works if set
+
     useEffect(() => {
         const stored = window.localStorage.getItem('theme') as 'light' | 'dark' | null
         if (stored) {
@@ -38,71 +56,72 @@ const OwnerDashboard = () => {
                         </div>
                         {/* Nav Links */}
                         <nav className="flex flex-col gap-1.5 flex-1">
-                            <a
+                            <Link
                                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary font-semibold transition-colors"
-                                href="#"
+                                to="/owner-dashboard"
                             >
                                 <span className="material-symbols-outlined text-[22px]">
                                     grid_view
                                 </span>
                                 <span className="text-sm">Overview</span>
-                            </a>
-                            <a
+                            </Link>
+                            <Link
                                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#726a81] hover:bg-[#f2f1f4] dark:hover:bg-[#2a2631] hover:text-[#141216] dark:hover:text-white transition-colors group"
-                                href="/owner/cars"
+                                to="/owner/cars"
                             >
                                 <span className="material-symbols-outlined text-[22px]">garage</span>
                                 <span className="text-sm font-medium">My Cars</span>
-                            </a>
-                            <a
+                            </Link>
+                            <Link
                                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#726a81] hover:bg-[#f2f1f4] dark:hover:bg-[#2a2631] hover:text-[#141216] dark:hover:text-white transition-colors group"
-                                href="#"
+                                to="/owner/cars/new"
                             >
                                 <span className="material-symbols-outlined text-[22px]">
                                     add_circle
                                 </span>
                                 <span className="text-sm font-medium">Add New Car</span>
-                            </a>
-                            <a
+                            </Link>
+                            <Link
                                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#726a81] hover:bg-[#f2f1f4] dark:hover:bg-[#2a2631] hover:text-[#141216] dark:hover:text-white transition-colors group"
-                                href="/owner/bookings"
+                                to="/owner/bookings"
                             >
                                 <span className="material-symbols-outlined text-[22px]">
                                     calendar_today
                                 </span>
                                 <span className="text-sm font-medium">Bookings</span>
-                            </a>
-                            <a
+                            </Link>
+                            <Link
                                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#726a81] hover:bg-[#f2f1f4] dark:hover:bg-[#2a2631] hover:text-[#141216] dark:hover:text-white transition-colors group"
-                                href="/owner/agency-profile"
+                                to="/owner/agency-profile"
                             >
                                 <span className="material-symbols-outlined text-[22px]">
                                     account_circle
                                 </span>
                                 <span className="text-sm font-medium">Profile</span>
-                            </a>
+                            </Link>
                         </nav>
                         {/* Footer Nav */}
                         <div className="pt-6 border-t border-[#e0dde3] dark:border-[#2a2631] flex flex-col gap-1.5">
-                            <a
+                            <Link
                                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#726a81] hover:bg-[#f2f1f4] dark:hover:bg-[#2a2631] hover:text-[#141216] dark:hover:text-white transition-colors group"
-                                href="/owner/agency-profile"
+                                to="/owner/agency-profile"
                             >
                                 <span className="material-symbols-outlined text-[22px]">
                                     settings
                                 </span>
                                 <span className="text-sm font-medium">Settings</span>
-                            </a>
-                            <a
-                                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors group"
-                                href="#"
+                            </Link>
+                            <button
+                                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors group w-full text-left"
+                                onClick={() => navigate('/auth')}
                             >
                                 <span className="material-symbols-outlined text-[22px]">
                                     logout
                                 </span>
                                 <span className="text-sm font-medium">Logout</span>
-                            </a>
+                            </button>
                         </div>
+
                     </div>
                 </aside>
                 {/* Main Content Area */}
@@ -133,13 +152,13 @@ const OwnerDashboard = () => {
                                         Total cars listed
                                     </p>
                                     <p className="text-[#141216] dark:text-white tracking-tight text-3xl font-extrabold leading-tight">
-                                        12
+                                        {stats.totalCars}
                                     </p>
                                     <div className="mt-2 flex items-center text-xs text-green-600 font-semibold bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded w-fit">
                                         <span className="material-symbols-outlined text-[14px] mr-1">
                                             trending_up
                                         </span>{' '}
-                                        +2 this month
+                                        All vehicles
                                     </div>
                                 </div>
                                 <div className="flex flex-col gap-2 rounded-xl p-6 border border-[#e0dde3] dark:border-[#2a2631] bg-white dark:bg-[#1f1b26] hover:border-primary/30 transition-colors shadow-sm">
@@ -147,10 +166,10 @@ const OwnerDashboard = () => {
                                         Active bookings
                                     </p>
                                     <p className="text-[#141216] dark:text-white tracking-tight text-3xl font-extrabold leading-tight">
-                                        5
+                                        {stats.activeBookings}
                                     </p>
-                                    <div className="mt-2 flex items-center text-xs text-[#726a81] font-semibold bg-[#f2f1f4] dark:bg-[#2a2631] px-2 py-0.5 rounded w-fit">
-                                        4 cars in use
+                                    <div className="mt-2 flex items-center text-xs text-booking-primary font-semibold bg-booking-primary/10 px-2 py-0.5 rounded w-fit">
+                                        {stats.activeBookings} cars in use
                                     </div>
                                 </div>
                                 <div className="flex flex-col gap-2 rounded-xl p-6 border border-[#e0dde3] dark:border-[#2a2631] bg-white dark:bg-[#1f1b26] hover:border-primary/30 transition-colors shadow-sm">
@@ -158,9 +177,9 @@ const OwnerDashboard = () => {
                                         Pending requests
                                     </p>
                                     <p className="text-[#141216] dark:text-white tracking-tight text-3xl font-extrabold leading-tight">
-                                        3
+                                        {stats.pendingRequests}
                                     </p>
-                                    <div className="mt-2 flex items-center text-xs text-amber-600 font-semibold bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded w-fit">
+                                    <div className="mt-2 flex items-center text-xs text-status-orange font-semibold bg-status-orange/10 px-2 py-0.5 rounded w-fit">
                                         Needs attention
                                     </div>
                                 </div>
@@ -169,7 +188,7 @@ const OwnerDashboard = () => {
                                         Total Earnings
                                     </p>
                                     <p className="text-[#141216] dark:text-white tracking-tight text-3xl font-extrabold leading-tight">
-                                        $4,250.00
+                                        {stats.earnings} DH
                                     </p>
                                     <div className="mt-2 flex items-center text-xs text-primary font-semibold bg-primary/10 px-2 py-0.5 rounded w-fit">
                                         <span className="material-symbols-outlined text-[14px] mr-1">
@@ -178,6 +197,7 @@ const OwnerDashboard = () => {
                                         Paid out monthly
                                     </div>
                                 </div>
+
                             </div>
                         </section>
                         {/* Recent Activity Section */}
@@ -186,102 +206,50 @@ const OwnerDashboard = () => {
                                 <h2 className="text-[#141216] dark:text-white text-lg font-bold leading-tight">
                                     Recent Activity
                                 </h2>
-                                <button className="text-sm text-primary font-semibold hover:underline">
+                                <Link to="/owner/bookings" className="text-sm text-primary font-semibold hover:underline">
                                     View all
-                                </button>
+                                </Link>
+
                             </div>
                             <div className="divide-y divide-[#e0dde3] dark:divide-[#2a2631]">
-                                {/* Activity Item 1 */}
-                                <div className="flex items-center gap-4 px-6 min-h-[80px] py-4 justify-between hover:bg-[#f2f1f4]/50 dark:hover:bg-[#2a2631]/50 transition-colors">
-                                    <div className="flex items-center gap-4">
-                                        <div className="text-green-600 flex items-center justify-center rounded-xl bg-green-50 dark:bg-green-900/20 shrink-0 size-11">
-                                            <span className="material-symbols-outlined">
-                                                check_circle
-                                            </span>
-                                        </div>
-                                        <div className="flex flex-col justify-center">
-                                            <p className="text-[#141216] dark:text-white text-[15px] font-semibold leading-normal line-clamp-1">
-                                                Booking confirmed for Tesla Model 3
-                                            </p>
-                                            <p className="text-[#726a81] text-sm font-normal leading-normal mt-0.5">
-                                                Confirmed by John Doe • 2 hours ago
-                                            </p>
-                                        </div>
+                                {recentActivity.length === 0 ? (
+                                    <div className="p-12 text-center">
+                                        <p className="text-[#726a81] text-sm">No recent activity found.</p>
                                     </div>
-                                    <div className="shrink-0">
-                                        <span className="text-[#726a81] text-xs font-medium tabular-nums">
-                                            14:30
-                                        </span>
-                                    </div>
-                                </div>
-                                {/* Activity Item 2 */}
-                                <div className="flex items-center gap-4 px-6 min-h-[80px] py-4 justify-between hover:bg-[#f2f1f4]/50 dark:hover:bg-[#2a2631]/50 transition-colors">
-                                    <div className="flex items-center gap-4">
-                                        <div className="text-primary flex items-center justify-center rounded-xl bg-primary/10 shrink-0 size-11">
-                                            <span className="material-symbols-outlined">pending</span>
+                                ) : (
+                                    recentActivity.map((activity) => (
+                                        <div key={activity.id} className="flex items-center gap-4 px-6 min-h-[80px] py-4 justify-between hover:bg-[#f2f1f4]/50 dark:hover:bg-[#2a2631]/50 transition-colors">
+                                            <div className="flex items-center gap-4">
+                                                <div className={`flex items-center justify-center rounded-xl shrink-0 size-11 ${activity.status === 'Confirmed' ? 'bg-green-50 dark:bg-green-900/20 text-green-600' :
+                                                        activity.status === 'Pending' ? 'bg-primary/10 text-primary' :
+                                                            'bg-red-50 dark:bg-red-900/20 text-red-600'
+                                                    }`}>
+                                                    <span className="material-symbols-outlined">
+                                                        {activity.status === 'Confirmed' ? 'check_circle' :
+                                                            activity.status === 'Pending' ? 'pending' : 'cancel'}
+                                                    </span>
+                                                </div>
+                                                <div className="flex flex-col justify-center">
+                                                    <p className="text-[#141216] dark:text-white text-[15px] font-semibold leading-normal line-clamp-1">
+                                                        {activity.status === 'Confirmed' ? `Booking confirmed for ${activity.carName}` :
+                                                            activity.status === 'Pending' ? `New request for ${activity.carName}` :
+                                                                `Booking rejected for ${activity.carName}`}
+                                                    </p>
+                                                    <p className="text-[#726a81] text-sm font-normal leading-normal mt-0.5">
+                                                        Customer: {activity.renterName} • {activity.startDate}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div className="shrink-0">
+                                                <span className="text-[#726a81] text-xs font-medium tabular-nums">
+                                                    {activity.totalPrice} DH
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div className="flex flex-col justify-center">
-                                            <p className="text-[#141216] dark:text-white text-[15px] font-semibold leading-normal line-clamp-1">
-                                                New request received for BMW X5
-                                            </p>
-                                            <p className="text-[#726a81] text-sm font-normal leading-normal mt-0.5">
-                                                Requested by Sarah Smith • 5 hours ago
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="shrink-0">
-                                        <span className="text-[#726a81] text-xs font-medium tabular-nums">
-                                            11:15
-                                        </span>
-                                    </div>
-                                </div>
-                                {/* Activity Item 3 */}
-                                <div className="flex items-center gap-4 px-6 min-h-[80px] py-4 justify-between hover:bg-[#f2f1f4]/50 dark:hover:bg-[#2a2631]/50 transition-colors">
-                                    <div className="flex items-center gap-4">
-                                        <div className="text-blue-500 flex items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/20 shrink-0 size-11">
-                                            <span className="material-symbols-outlined">
-                                                payments
-                                            </span>
-                                        </div>
-                                        <div className="flex flex-col justify-center">
-                                            <p className="text-[#141216] dark:text-white text-[15px] font-semibold leading-normal line-clamp-1">
-                                                Payment processed for booking #DS-9821
-                                            </p>
-                                            <p className="text-[#726a81] text-sm font-normal leading-normal mt-0.5">
-                                                Earnings added to your wallet • Yesterday
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="shrink-0">
-                                        <span className="text-[#726a81] text-xs font-medium tabular-nums">
-                                            18:45
-                                        </span>
-                                    </div>
-                                </div>
-                                {/* Activity Item 4 */}
-                                <div className="flex items-center gap-4 px-6 min-h-[80px] py-4 justify-between hover:bg-[#f2f1f4]/50 dark:hover:bg-[#2a2631]/50 transition-colors">
-                                    <div className="flex items-center gap-4">
-                                        <div className="text-amber-500 flex items-center justify-center rounded-xl bg-amber-50 dark:bg-amber-900/20 shrink-0 size-11">
-                                            <span className="material-symbols-outlined">
-                                                report_problem
-                                            </span>
-                                        </div>
-                                        <div className="flex flex-col justify-center">
-                                            <p className="text-[#141216] dark:text-white text-[15px] font-semibold leading-normal line-clamp-1">
-                                                Vehicle inspection reminder
-                                            </p>
-                                            <p className="text-[#726a81] text-sm font-normal leading-normal mt-0.5">
-                                                Audi A4 is due for annual maintenance • 2 days ago
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="shrink-0">
-                                        <span className="text-[#726a81] text-xs font-medium tabular-nums">
-                                            09:00
-                                        </span>
-                                    </div>
-                                </div>
+                                    ))
+                                )}
                             </div>
+
                         </section>
                         {/* Quick Actions Grid (Bonus context-specific element) */}
                         <section className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-8">
@@ -293,7 +261,10 @@ const OwnerDashboard = () => {
                                         from today.
                                     </p>
                                 </div>
-                                <button className="bg-white text-primary px-4 py-2 rounded-lg text-sm font-bold w-fit mt-4 flex items-center gap-2">
+                                <button
+                                    onClick={() => navigate('/owner/cars/new')}
+                                    className="bg-white text-primary px-4 py-2 rounded-lg text-sm font-bold w-fit mt-4 flex items-center gap-2"
+                                >
                                     <span className="material-symbols-outlined text-[18px]">
                                         add
                                     </span>{' '}
@@ -310,13 +281,17 @@ const OwnerDashboard = () => {
                                         classes.
                                     </p>
                                 </div>
-                                <button className="bg-[#2a2631] text-white border border-[#3a3641] px-4 py-2 rounded-lg text-sm font-bold w-fit mt-4 flex items-center gap-2">
+                                <button
+                                    onClick={() => navigate('/owner/agency-profile')}
+                                    className="bg-[#2a2631] text-white border border-[#3a3641] px-4 py-2 rounded-lg text-sm font-bold w-fit mt-4 flex items-center gap-2"
+                                >
                                     <span className="material-symbols-outlined text-[18px]">
                                         verified
                                     </span>{' '}
                                     Verify Agency
                                 </button>
                             </div>
+
                         </section>
                     </div>
                 </main>

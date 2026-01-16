@@ -1,4 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+
 
 type View =
   | 'sign-in'
@@ -55,7 +57,9 @@ interface LoginData {
 }
 
 const AuthPage = () => {
+  const navigate = useNavigate()
   const [view, setView] = useState<View>('sign-in')
+
   const [theme, setTheme] = useState<Theme>('light')
 
   const [registerData, setRegisterData] = useState<RegisterData>({
@@ -155,8 +159,14 @@ const AuthPage = () => {
   const handleLoginSubmit = (e: FormEvent) => {
     e.preventDefault()
     console.log('Login Payload:', loginData)
-    // TODO: Connect to backend API
+    // Simulate login success
+    if (loginData.email.includes('owner')) {
+      navigate('/owner-dashboard')
+    } else {
+      navigate('/')
+    }
   }
+
 
   const handleRegisterSubmit = (e: FormEvent) => {
     e.preventDefault()
@@ -167,12 +177,14 @@ const AuthPage = () => {
 
     const payload = {
       ...registerData,
-      phoneNumber: registerData.phoneNumber || null // Send null if empty (matches DB unique constraint)
+      phoneNumber: registerData.phoneNumber || null
     }
 
     console.log('Register Payload:', payload)
-    // TODO: Connect to backend API
+    alert('Account created! Please sign in.')
+    setView('sign-in')
   }
+
 
   if (view === 'sign-in') {
     return (
@@ -260,12 +272,14 @@ const AuthPage = () => {
                   <label className="text-sm font-semibold text-[#141216] dark:text-[#e0dde3]">
                     Password
                   </label>
-                  <a
+                  <button
+                    type="button"
                     className="text-sm font-semibold text-primary hover:underline"
-                    href="#"
+                    onClick={() => alert('Password reset link sent to your email.')}
                   >
                     Forgot password?
-                  </a>
+                  </button>
+
                 </div>
                 <div className="relative group">
                   <input
@@ -297,12 +311,14 @@ const AuthPage = () => {
                 <button
                   className="w-full h-12 border border-[#e0dde3] dark:border-[#332e3d] text-[#141216] dark:text-[#e0dde3] font-semibold rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all flex items-center justify-center gap-2 group"
                   type="button"
+                  onClick={() => navigate('/')}
                 >
                   <span>Continue as Guest</span>
                   <span className="material-symbols-outlined text-[18px] group-hover:translate-x-0.5 transition-transform">
                     arrow_forward
                   </span>
                 </button>
+
               </div>
             </form>
             <p className="text-center text-[#726a81] dark:text-[#a199b0]">
@@ -319,25 +335,26 @@ const AuthPage = () => {
         </main>
         <footer className="mt-auto w-full py-8 px-10 flex flex-col md:flex-row justify-center items-center gap-8 text-[#726a81] dark:text-[#a199b0]">
           <div className="flex gap-8">
-            <a
+            <Link
               className="text-xs font-semibold hover:text-primary transition-colors"
-              href="#"
+              to="/"
             >
               Terms
-            </a>
-            <a
+            </Link>
+            <Link
               className="text-xs font-semibold hover:text-primary transition-colors"
-              href="#"
+              to="/"
             >
               Privacy
-            </a>
-            <a
+            </Link>
+            <Link
               className="text-xs font-semibold hover:text-primary transition-colors"
-              href="#"
+              to="/"
             >
               Help
-            </a>
+            </Link>
           </div>
+
           <div className="text-[11px] font-medium opacity-60">
             © 2024 AUTOSHARE
           </div>
@@ -479,25 +496,26 @@ const AuthPage = () => {
         </main>
         <footer className="mt-auto w-full max-w-[960px] border-t border-[#e0dde3] dark:border-[#332e3d] py-6 px-10 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex gap-8">
-            <a
+            <Link
               className="text-xs font-medium text-[#726a81] dark:text-[#a199b0] hover:text-primary transition-colors"
-              href="#"
+              to="/"
             >
               Terms of Service
-            </a>
-            <a
+            </Link>
+            <Link
               className="text-xs font-medium text-[#726a81] dark:text-[#a199b0] hover:text-primary transition-colors"
-              href="#"
+              to="/"
             >
               Privacy Policy
-            </a>
-            <a
+            </Link>
+            <Link
               className="text-xs font-medium text-[#726a81] dark:text-[#a199b0] hover:text-primary transition-colors"
-              href="#"
+              to="/"
             >
               Help Center
-            </a>
+            </Link>
           </div>
+
           <div className="text-xs text-[#726a81] dark:text-[#a199b0]">
             © 2024 AutoShare Inc. All rights reserved.
           </div>
@@ -886,21 +904,22 @@ const AuthPage = () => {
                   </div>
                   <span className="text-sm text-[#726a81] dark:text-[#a199b0] leading-tight">
                     I agree to the{' '}
-                    <a
+                    <Link
                       className="text-primary font-semibold hover:underline"
-                      href="#"
+                      to="/"
                     >
                       Terms of Service
-                    </a>{' '}
+                    </Link>{' '}
                     and{' '}
-                    <a
+                    <Link
                       className="text-primary font-semibold hover:underline"
-                      href="#"
+                      to="/"
                     >
                       Privacy Policy
-                    </a>
+                    </Link>
                     .
                   </span>
+
                 </label>
               </div>
               <button
@@ -915,37 +934,40 @@ const AuthPage = () => {
             </form>
             <p className="text-center mt-8 text-xs text-[#726a81] dark:text-[#a199b0]">
               Need help?{' '}
-              <a
+              <button
+                type="button"
                 className="text-primary font-bold hover:underline"
-                href="#"
+                onClick={() => alert('Support team will contact you shortly.')}
               >
                 Contact Support
-              </a>
+              </button>
             </p>
+
           </div>
         </div>
       </main>
       <footer className="mt-auto w-full max-w-[960px] border-t border-[#e0dde3] dark:border-[#332e3d] py-6 px-10 flex flex-col md:flex-row justify-between items-center gap-4">
         <div className="flex gap-8">
-          <a
+          <Link
             className="text-xs font-medium text-[#726a81] dark:text-[#a199b0] hover:text-primary transition-colors"
-            href="#"
+            to="/"
           >
             Terms of Service
-          </a>
-          <a
+          </Link>
+          <Link
             className="text-xs font-medium text-[#726a81] dark:text-[#a199b0] hover:text-primary transition-colors"
-            href="#"
+            to="/"
           >
             Privacy Policy
-          </a>
-          <a
+          </Link>
+          <Link
             className="text-xs font-medium text-[#726a81] dark:text-[#a199b0] hover:text-primary transition-colors"
-            href="#"
+            to="/"
           >
             Help Center
-          </a>
+          </Link>
         </div>
+
         <div className="text-xs text-[#726a81] dark:text-[#a199b0]">
           © 2026 iRent Inc. All rights reserved.
         </div>

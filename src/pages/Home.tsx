@@ -1,5 +1,7 @@
 import { useMemo, useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useCars } from '../context/CarContext'
+
 
 type Suggestion = {
     displayName: string
@@ -8,7 +10,9 @@ type Suggestion = {
 }
 
 export default function Home() {
+    const navigate = useNavigate()
     const [pickupLocation, setPickupLocation] = useState('')
+
     const [dropoffLocation, setDropoffLocation] = useState('')
     const [sameLocation, setSameLocation] = useState(true)
     const [pickupDate, setPickupDate] = useState('')
@@ -18,8 +22,11 @@ export default function Home() {
     const [pickupSuggestions, setPickupSuggestions] = useState<Suggestion[]>([])
     const [dropoffSuggestions, setDropoffSuggestions] = useState<Suggestion[]>([])
     const [error, setError] = useState<string | null>(null)
+    const { cars } = useCars()
+    const trendingCars = useMemo(() => cars.slice(0, 4), [cars])
 
     const fetchSuggestions = async (query: string, setter: (s: Suggestion[]) => void) => {
+
         if (query.trim().length < 3) {
             setter([])
             return
@@ -74,8 +81,20 @@ export default function Home() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         if (!canSearch) return
-        alert('Search initiated!')
+
+        // Pass search criteria via state to /cars
+        navigate('/cars', {
+            state: {
+                pickupLocation,
+                dropoffLocation,
+                pickupDate,
+                dropoffDate,
+                pickupTime,
+                dropoffTime
+            }
+        })
     }
+
 
     const handleClear = () => {
         setPickupLocation('')
@@ -529,41 +548,54 @@ export default function Home() {
             </section>
 
             {/* Adjusted padding top for categories since absolute search bar only overlaps on desktop now */}
-            {/* If static on mobile/tablet, we don't need huge padding top. If absolute on desktop, we do. */}
             <section className="max-w-7xl mx-auto px-6 pt-12 lg:pt-40 pb-20">
                 <h3 className="text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-10 text-left font-display">
                     Categories
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    <div className="group flex flex-col items-center p-8 bg-primary border border-primary rounded-2xl hover:shadow-2xl hover:scale-105 transition-all cursor-pointer">
+                    <button
+                        onClick={() => navigate('/cars', { state: { category: 'SUVs' } })}
+                        className="group flex flex-col items-center p-8 bg-primary border border-primary rounded-2xl hover:shadow-2xl hover:scale-105 transition-all cursor-pointer w-full"
+                    >
                         <div className="mb-4 text-white/80 group-hover:text-white transition-colors">
                             <span className="material-symbols-outlined !text-4xl">auto_awesome</span>
                         </div>
                         <span className="font-bold text-white group-hover:text-white transition-colors">SUVs</span>
-                    </div>
+                    </button>
 
-                    <div className="group flex flex-col items-center p-8 bg-primary border border-primary rounded-2xl hover:shadow-2xl hover:scale-105 transition-all cursor-pointer">
+                    <button
+                        onClick={() => navigate('/cars', { state: { category: 'Electric' } })}
+                        className="group flex flex-col items-center p-8 bg-primary border border-primary rounded-2xl hover:shadow-2xl hover:scale-105 transition-all cursor-pointer w-full"
+                    >
                         <div className="mb-4 text-white/80 group-hover:text-white transition-colors">
                             <span className="material-symbols-outlined !text-4xl">electric_car</span>
                         </div>
                         <span className="font-bold text-white group-hover:text-white transition-colors">Electric</span>
-                    </div>
+                    </button>
 
-                    <div className="group flex flex-col items-center p-8 bg-primary border border-primary rounded-2xl hover:shadow-2xl hover:scale-105 transition-all cursor-pointer">
+                    <button
+                        onClick={() => navigate('/cars', { state: { category: 'Luxury' } })}
+                        className="group flex flex-col items-center p-8 bg-primary border border-primary rounded-2xl hover:shadow-2xl hover:scale-105 transition-all cursor-pointer w-full"
+                    >
                         <div className="mb-4 text-white/80 group-hover:text-white transition-colors">
                             <span className="material-symbols-outlined !text-4xl">workspace_premium</span>
                         </div>
                         <span className="font-bold text-white group-hover:text-white transition-colors">Luxury</span>
-                    </div>
+                    </button>
 
-                    <div className="group flex flex-col items-center p-8 bg-primary border border-primary rounded-2xl hover:shadow-2xl hover:scale-105 transition-all cursor-pointer">
+                    <button
+                        onClick={() => navigate('/cars', { state: { category: 'Economy' } })}
+                        className="group flex flex-col items-center p-8 bg-primary border border-primary rounded-2xl hover:shadow-2xl hover:scale-105 transition-all cursor-pointer w-full"
+                    >
                         <div className="mb-4 text-white/80 group-hover:text-white transition-colors">
                             <span className="material-symbols-outlined !text-4xl">eco</span>
                         </div>
                         <span className="font-bold text-white group-hover:text-white transition-colors">Economy</span>
-                    </div>
+                    </button>
                 </div>
+
             </section>
+
 
             <section className="max-w-7xl mx-auto px-6 py-12 mb-20">
                 <div className="flex items-center justify-between mb-10">
@@ -579,161 +611,46 @@ export default function Home() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                    <div className="group flex flex-col bg-white dark:bg-slate-900 rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800 hover:shadow-xl transition-shadow">
-                        <div className="relative h-48 overflow-hidden">
-                            <img
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWsiPr30HMOPsL20Zbw50dphbkmgV4tLVi4q17QXBaP_5m8OgzR4DxfnjRzQErs7H6YZY2r6PeZ4YBaOYwmL_qnVR6N1yUsm3FLb-DwGHhQkB-5NeQ_krd1jLO8JSrHgNGQymPZn0fOA9C5veaOG5S1AUF6mHYMSyvfQg7nlZY7WuZ2yc5PaO14iK9sUCT7nqum-nnYWSyh_o31bnyJyqRCCjtz0RVUehbC5OuendIeExNeE_jxno6bOcCBMelVNQIPKex579CMaU"
-                                alt="Tesla Model 3"
-                            />
-                            <div className="absolute top-3 right-3 bg-white/90 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest text-slate-900">
-                                Electric
+                    {trendingCars.map((car) => (
+                        <div key={car.id} className="group flex flex-col bg-white dark:bg-slate-900 rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800 hover:shadow-xl transition-shadow">
+                            <div className="relative h-48 overflow-hidden">
+                                <img
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                    src={car.image}
+                                    alt={car.name}
+                                />
+                                <div className="absolute top-3 right-3 bg-white/90 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest text-slate-900">
+                                    {car.type}
+                                </div>
                             </div>
-                        </div>
-                        <div className="p-6">
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <h4 className="font-bold text-lg mb-1">Tesla Model 3</h4>
-                                    <div className="flex items-center gap-1 text-amber-500">
-                                        <span className="material-symbols-outlined !text-sm fill-1">star</span>
-                                        <span className="text-xs font-bold text-slate-500">
-                                            4.9 (128 reviews)
+                            <div className="p-6">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h4 className="font-bold text-lg mb-1">{car.name}</h4>
+                                        <div className="flex items-center gap-1 text-amber-500">
+                                            <span className="material-symbols-outlined !text-sm fill-1">star</span>
+                                            <span className="text-xs font-bold text-slate-500">
+                                                {car.rating.toFixed(1)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <span className="block text-xl font-bold text-primary">{car.price} DH</span>
+                                        <span className="text-[10px] text-slate-400 uppercase font-bold tracking-tighter">
+                                            per day
                                         </span>
                                     </div>
                                 </div>
-                                <div className="text-right">
-                                    <span className="block text-xl font-bold text-primary">890 DH</span>
-                                    <span className="text-[10px] text-slate-400 uppercase font-bold tracking-tighter">
-                                        per day
-                                    </span>
-                                </div>
-                            </div>
-                            <Link
-                                className="inline-flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors"
-                                to="/cars"
-                            >
-                                View details
-                                <span className="material-symbols-outlined !text-sm">arrow_forward</span>
-                            </Link>
-                        </div>
-                    </div>
-
-                    <div className="group flex flex-col bg-white dark:bg-slate-900 rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800 hover:shadow-xl transition-shadow">
-                        <div className="relative h-48 overflow-hidden">
-                            <img
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNLfayAnhuev7lVUPEDXTJhUq8DHOY0vQwjeA9VnUqAzZBAZLzrospexDyllvK6V1XgM3DlCTtOUxXepy0-idDmp8Lt3ynzw2mXvcpVeftw6pWyMrcqadj_ZqtAmv9FuDU_P7fHrTX0BX-KSyp8F_d95zbrrCwXr5aYxQAWKNDzcJn96ewjhbLjzeG6-B0Ca0iA9JSRfXdbmRq-ffDli9M12ZoFT6GSM7ssmpfMfeaJKfy4QlTbQFbsqgteqakHpz0QhiU1DuoJ7s"
-                                alt="BMW M4 Competition"
-                            />
-                            <div className="absolute top-3 right-3 bg-white/90 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest text-slate-900">
-                                Luxury
+                                <Link
+                                    className="inline-flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors"
+                                    to="/car-details"
+                                >
+                                    View details
+                                    <span className="material-symbols-outlined !text-sm">arrow_forward</span>
+                                </Link>
                             </div>
                         </div>
-                        <div className="p-6">
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <h4 className="font-bold text-lg mb-1">BMW M4 Competition</h4>
-                                    <div className="flex items-center gap-1 text-amber-500">
-                                        <span className="material-symbols-outlined !text-sm fill-1">star</span>
-                                        <span className="text-xs font-bold text-slate-500">
-                                            5.0 (42 reviews)
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="text-right">
-                                    <span className="block text-xl font-bold text-primary">1550 DH</span>
-                                    <span className="text-[10px] text-slate-400 uppercase font-bold tracking-tighter">
-                                        per day
-                                    </span>
-                                </div>
-                            </div>
-                            <Link
-                                className="inline-flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors"
-                                to="/cars"
-                            >
-                                View details
-                                <span className="material-symbols-outlined !text-sm">arrow_forward</span>
-                            </Link>
-                        </div>
-                    </div>
-
-                    <div className="group flex flex-col bg-white dark:bg-slate-900 rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800 hover:shadow-xl transition-shadow">
-                        <div className="relative h-48 overflow-hidden">
-                            <img
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjeADxneWW9aVwoBpIwodIIt6fChxTyfh8Za19HhvgN5T99Nu4N4oYNIw2jaqv74ATBMUREO2bbOGzXCM8mY0VB7acxddwUGNlSRkeLvbP-kLJepQMfrQk2hrE1zIZQoo2Q8LU1DAIy7T04azmZkwg3N4UfNgLJtxrQ5Qdp81WokOC8ydUBO06UXpLCPTHVPaPYCyr5UHqj1O96VoxdEQdcAjOW9Y33YFGp2lHXUJ0bfhnoqycruygsUTe7eLUkXLqTAE7BxL5KqI"
-                                alt="Land Rover Defender"
-                            />
-                            <div className="absolute top-3 right-3 bg-white/90 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest text-slate-900">
-                                SUV
-                            </div>
-                        </div>
-                        <div className="p-6">
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <h4 className="font-bold text-lg mb-1">Land Rover Defender</h4>
-                                    <div className="flex items-center gap-1 text-amber-500">
-                                        <span className="material-symbols-outlined !text-sm fill-1">star</span>
-                                        <span className="text-xs font-bold text-slate-500">
-                                            4.8 (95 reviews)
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="text-right">
-                                    <span className="block text-xl font-bold text-primary">1200 DH</span>
-                                    <span className="text-[10px] text-slate-400 uppercase font-bold tracking-tighter">
-                                        per day
-                                    </span>
-                                </div>
-                            </div>
-                            <Link
-                                className="inline-flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors"
-                                to="/cars"
-                            >
-                                View details
-                                <span className="material-symbols-outlined !text-sm">arrow_forward</span>
-                            </Link>
-                        </div>
-                    </div>
-
-                    <div className="group flex flex-col bg-white dark:bg-slate-900 rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800 hover:shadow-xl transition-shadow">
-                        <div className="relative h-48 overflow-hidden">
-                            <img
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuATYPMd-Adppp8vXWJeeOCaIUw9sdkf1nYeUnjIGmZ5-fmAlMrXTjSntYgw37idHE17UbXbNgK2rnemqqxX_MM2myBm3hVhgbcYhTD-iGwaaaaivfyUdUmZhAdZ_4ELjWe4ELHRBKLWkgLEgAmhNiXnkLMxcVEK3M3VxKTocNKuTVrqKnWD2w-HX91g3JR406EikUzeoFlj8F8You-MPELcN0ZnwqOR06E3MZTWxmI4fx4qSvf6oqWUSom3-PSg1W5DhSwsZgDAltM"
-                                alt="Audi A6 Sedan"
-                            />
-                            <div className="absolute top-3 right-3 bg-white/90 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest text-slate-900">
-                                Economy
-                            </div>
-                        </div>
-                        <div className="p-6">
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <h4 className="font-bold text-lg mb-1">Audi A6 Sedan</h4>
-                                    <div className="flex items-center gap-1 text-amber-500">
-                                        <span className="material-symbols-outlined !text-sm fill-1">star</span>
-                                        <span className="text-xs font-bold text-slate-500">
-                                            4.7 (215 reviews)
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="text-right">
-                                    <span className="block text-xl font-bold text-primary">720 DH</span>
-                                    <span className="text-[10px] text-slate-400 uppercase font-bold tracking-tighter">
-                                        per day
-                                    </span>
-                                </div>
-                            </div>
-                            <Link
-                                className="inline-flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors"
-                                to="/cars"
-                            >
-                                View details
-                                <span className="material-symbols-outlined !text-sm">arrow_forward</span>
-                            </Link>
-                        </div>
-                    </div>
+                    ))}
                 </div>
             </section>
         </>

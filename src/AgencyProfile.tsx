@@ -17,7 +17,8 @@ const AgencyProfile = () => {
                     <nav className="hidden md:flex items-center gap-8">
                         <Link className="text-sm font-medium text-[#726a81] hover:text-primary transition-colors" to="/owner-dashboard">Dashboard</Link>
                         <Link className="text-sm font-medium text-[#726a81] hover:text-primary transition-colors" to="/owner/cars">Rentals</Link>
-                        <a className="text-sm font-medium text-[#726a81] hover:text-primary transition-colors" href="#">Messages</a>
+                        <Link className="text-sm font-medium text-[#726a81] hover:text-primary transition-colors" to="/owner/bookings">Messages</Link>
+
                         <Link className="text-sm font-medium text-primary border-b-2 border-primary py-5" to="/owner/agency-profile">Settings</Link>
                     </nav>
                     <div className="flex items-center gap-4">
@@ -156,9 +157,20 @@ const AgencyProfile = () => {
                         <p className="text-sm font-medium">Your data is encrypted and used only for verification.</p>
                     </div>
                     <div className="flex gap-4">
-                        <button className="px-6 py-2.5 rounded-lg text-sm font-bold text-[#726a81] hover:bg-[#f7f6f8] dark:hover:bg-[#2e2a36] transition-colors">Discard</button>
-                        <button className="px-8 py-2.5 rounded-lg bg-primary text-white text-sm font-bold shadow-md shadow-primary/20 hover:opacity-90 transition-all">Save Changes</button>
+                        <button
+                            onClick={() => window.history.back()}
+                            className="px-6 py-2.5 rounded-lg text-sm font-bold text-[#726a81] hover:bg-[#f7f6f8] dark:hover:bg-[#2e2a36] transition-colors"
+                        >
+                            Discard
+                        </button>
+                        <button
+                            onClick={() => alert('Profile settings saved successfully!')}
+                            className="px-8 py-2.5 rounded-lg bg-primary text-white text-sm font-bold shadow-md shadow-primary/20 hover:opacity-90 transition-all"
+                        >
+                            Save Changes
+                        </button>
                     </div>
+
                 </div>
             </main>
             <footer className="max-w-[1200px] mx-auto px-6 py-12 text-center">
